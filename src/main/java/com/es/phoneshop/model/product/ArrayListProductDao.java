@@ -5,6 +5,8 @@ import com.es.phoneshop.model.product.exception.ProductNotFoundException;
 
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class ArrayListProductDao implements ProductDao {
@@ -13,7 +15,14 @@ public class ArrayListProductDao implements ProductDao {
 
     private long newId;
 
-    private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
+    private static final ReentrantReadWriteLock lock;
+
+    private static final Logger LOGGER;
+
+    static {
+        lock = new ReentrantReadWriteLock(true);
+        LOGGER = Logger.getLogger(ArrayListProductDao.class.getName());
+    }
 
     public ArrayListProductDao() {
         this.productList = DataGenerator.generateSampleProducts();
@@ -26,6 +35,10 @@ public class ArrayListProductDao implements ProductDao {
     public Product getProduct(Long id) throws ProductNotFoundException {
         lock.readLock().lock();
         try {
+            if (id == null) {
+                LOGGER.log(Level.WARNING, "getProduct(Long id) has got null id");
+                throw new ProductNotFoundException();
+            }
             return productList.stream()
                     .filter(product -> id.equals(product.getId()))
                     .findAny()
@@ -40,6 +53,7 @@ public class ArrayListProductDao implements ProductDao {
         lock.readLock().lock();
         try {
             return productList.stream()
+                    .filter(this::isProductNotNull)
                     .filter(this::isPriceNotNull)
                     .filter(this::isProductInStock)
                     .collect(Collectors.toList());
@@ -53,24 +67,30 @@ public class ArrayListProductDao implements ProductDao {
         lock.writeLock().lock();
         try {
             if (product.getId() != null) {
-                productList.set(productList.indexOf(getProduct(product.getId())), product);
+                productList.stream()
+                        .filter(product::equals)
+                        .map(p -> p = product);
                 return;
             }
             product.setId(++newId);
             productList.add(product);
-        } catch (ProductNotFoundException ignored) {
-
         } finally {
             lock.writeLock().unlock();
         }
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws ProductNotFoundException {
         lock.writeLock().lock();
         try {
-            productList.remove(getProduct(id));
-        } catch (ProductNotFoundException ignored) {
+            if (id == null) {
+                LOGGER.log(Level.WARNING, "delete(Long id) has got null id");
+                throw new ProductNotFoundException();
+            }
+            productList.remove(productList.stream()
+                    .filter(product -> id.equals(product.getId()))
+                    .findAny()
+                    .orElseThrow(ProductNotFoundException::new));
         } finally {
             lock.writeLock().unlock();
         }
@@ -82,5 +102,9 @@ public class ArrayListProductDao implements ProductDao {
 
     private boolean isPriceNotNull(Product product) {
         return product.getPrice() != null;
+    }
+
+    private boolean isProductNotNull(Product product) {
+        return product != null;
     }
 }
