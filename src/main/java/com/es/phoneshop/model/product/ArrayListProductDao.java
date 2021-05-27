@@ -67,9 +67,8 @@ public class ArrayListProductDao implements ProductDao {
         lock.writeLock().lock();
         try {
             if (product.getId() != null) {
-                productList.stream()
-                        .filter(product::equals)
-                        .map(p -> p = product);
+                productList.removeIf(p -> product.getId().equals(p.getId()));
+                productList.add(product);
                 return;
             }
             product.setId(++newId);
@@ -87,10 +86,9 @@ public class ArrayListProductDao implements ProductDao {
                 LOGGER.log(Level.WARNING, "delete(Long id) has got null id");
                 throw new ProductNotFoundException();
             }
-            productList.remove(productList.stream()
-                    .filter(product -> id.equals(product.getId()))
-                    .findAny()
-                    .orElseThrow(ProductNotFoundException::new));
+            if (!productList.removeIf(product -> id.equals(product.getId()))) {
+                throw new ProductNotFoundException();
+            }
         } finally {
             lock.writeLock().unlock();
         }
@@ -108,3 +106,4 @@ public class ArrayListProductDao implements ProductDao {
         return product != null;
     }
 }
+

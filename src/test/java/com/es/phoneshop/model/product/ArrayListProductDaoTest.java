@@ -48,7 +48,7 @@ public class ArrayListProductDaoTest {
         Product product = new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
 
-        Product update = productDao.getProduct(product.getId());
+        Product update = new Product(product.getId(), product.getCode(), product.getDescription(), product.getPrice(), product.getCurrency(), product.getStock(), product.getImageUrl());
         update.setPrice(new BigDecimal(150));
         productDao.save(update);
 
@@ -85,7 +85,7 @@ public class ArrayListProductDaoTest {
         assertFalse(productDao.findProducts().contains(product));
     }
 
-    @Test
+    @Test(expected = ProductNotFoundException.class)
     public void testDeleteNonExistentProduct() throws ProductNotFoundException {
         Currency usd = Currency.getInstance("USD");
         Product product = new Product("nonExistent", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
@@ -93,14 +93,7 @@ public class ArrayListProductDaoTest {
 
         productDao.delete(product.getId());
 
-        boolean check = false;
-        try {
-            productDao.delete(product.getId());
-        } catch (ProductNotFoundException e) {
-            check = true;
-        }
-
-        assertTrue(check);
+        productDao.delete(product.getId());
     }
 
     @Test
@@ -112,7 +105,7 @@ public class ArrayListProductDaoTest {
         assertEquals(product.getId(), productDao.getProduct(product.getId()).getId());
     }
 
-    @Test
+    @Test(expected = ProductNotFoundException.class)
     public void testGetNonExistentProduct() throws ProductNotFoundException {
         Currency usd = Currency.getInstance("USD");
         Product product = new Product("nonExistent", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
@@ -120,13 +113,6 @@ public class ArrayListProductDaoTest {
 
         productDao.delete(product.getId());
 
-        boolean check = false;
-        try {
-            productDao.getProduct(product.getId());
-        } catch (ProductNotFoundException e) {
-            check = true;
-        }
-
-        assertTrue(check);
+        productDao.getProduct(product.getId());
     }
 }
