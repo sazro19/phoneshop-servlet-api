@@ -52,6 +52,39 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
+    public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
+        lock.readLock().lock();
+        try {
+            Comparator<Product> comparator;
+            if (SortField.description == sortField) {
+                comparator = Comparator.comparing(Product::getDescription);
+            } else {
+                comparator = Comparator.comparing(Product::getPrice);
+            }
+            if (SortOrder.desc == sortOrder) {
+                comparator = comparator.reversed();
+            }
+
+            List<Product> result = productList.stream()
+                    .filter(this::isProductNotNull)
+                    .filter(this::isPriceNotNull)
+                    .filter(this::isProductInStock)
+                    .filter(p -> isProductMatchesAnyQuery(p, query))
+                    .sorted((p1, p2) -> Long.compare(countOccurrence(p2, query), countOccurrence(p1, query)))
+                    .collect(Collectors.toList());
+
+            if (sortField != null) {
+                result = result.stream()
+                        .sorted(comparator)
+                        .collect(Collectors.toList());
+            }
+            return result;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
     public List<Product> findProducts(String query) {
         lock.readLock().lock();
         try {
