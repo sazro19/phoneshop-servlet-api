@@ -3,6 +3,9 @@ package com.es.phoneshop.model.product;
 import com.es.phoneshop.data.DataGenerator;
 import com.es.phoneshop.model.product.exception.ProductNotFoundException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
@@ -43,6 +46,23 @@ public class ArrayListProductDao implements ProductDao {
                     .filter(product -> id.equals(product.getId()))
                     .findAny()
                     .orElseThrow(ProductNotFoundException::new);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public List<Product> findProducts(String query) {
+        lock.readLock().lock();
+        try {
+            List<Product> result = productList.stream()
+                    .filter(this::isProductNotNull)
+                    .filter(this::isPriceNotNull)
+                    .filter(this::isProductInStock)
+                    .filter(p -> isProductMatchesAnyQuery(p, query))
+                    .sorted((p1, p2) -> Long.compare(countOccurrence(p2, query), countOccurrence(p1, query)))
+                    .collect(Collectors.toList());
+            return result;
         } finally {
             lock.readLock().unlock();
         }
@@ -104,6 +124,26 @@ public class ArrayListProductDao implements ProductDao {
 
     private boolean isProductNotNull(Product product) {
         return product != null;
+    }
+
+    private boolean isProductMatchesAnyQuery(Product product, String query) {
+        if (query == null || query.isEmpty()) {
+            return true;
+        }
+        List<String> words = new ArrayList<>(Arrays.asList(query.split(" ")));
+        return words.stream()
+                .anyMatch(word -> Arrays.asList(product.getDescription().split(" ")).contains(word));
+    }
+
+    private long countOccurrence(Product product, String query) {
+        if (query == null || query.isEmpty()) {
+            return 0;
+        }
+        List<String> words = new ArrayList<>(Arrays.asList(query.split(" ")));
+        List<String> descriptionWords = new ArrayList<>(Arrays.asList(product.getDescription().split(" ")));
+        return descriptionWords.stream()
+                .filter(words::contains)
+                .count();
     }
 }
 

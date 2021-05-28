@@ -5,7 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Currency;
+import java.util.List;
 import java.util.Objects;
 
 import static org.junit.Assert.*;
@@ -114,5 +116,24 @@ public class ArrayListProductDaoTest {
         productDao.delete(product.getId());
 
         productDao.getProduct(product.getId());
+    }
+
+    @Test
+    public void testFindProductsWithQuery() throws ProductNotFoundException {
+        Currency usd = Currency.getInstance("USD");
+        Product p1 = new Product("p1", "Huawei", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        Product p2 = new Product("p2", "Huawei X", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        Product p3 = new Product("p3", "Huawei X 1", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        productDao.save(p1);
+        productDao.save(p2);
+        productDao.save(p3);
+
+        String query = "Huawei X 1";
+
+        List<Product> expected = Arrays.asList(productDao.getProduct(p3.getId()),
+                productDao.getProduct(p2.getId()),
+                productDao.getProduct(p1.getId()));
+
+        assertEquals(expected, productDao.findProducts(query));
     }
 }
