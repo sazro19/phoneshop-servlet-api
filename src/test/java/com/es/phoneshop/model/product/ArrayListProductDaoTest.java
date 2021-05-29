@@ -1,5 +1,6 @@
 package com.es.phoneshop.model.product;
 
+import com.es.phoneshop.data.DataGenerator;
 import com.es.phoneshop.model.product.exception.ProductNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,10 @@ public class ArrayListProductDaoTest {
 
     @Before
     public void setup() {
-        productDao = new ArrayListProductDao();
+        productDao = ArrayListProductDao.getInstance();
+        DataGenerator.generateSampleProducts().forEach(product -> {
+            productDao.save(product);
+        });
     }
 
     @Test
@@ -42,6 +46,7 @@ public class ArrayListProductDaoTest {
 
         assertNotNull(check);
         assertEquals("sgs", check.getCode());
+        productDao.delete(product.getId());
     }
 
     @Test
@@ -57,24 +62,27 @@ public class ArrayListProductDaoTest {
         Product check = productDao.getProduct(update.getId());
 
         assertEquals(new BigDecimal(150), check.getPrice());
+        productDao.delete(product.getId());
     }
 
     @Test
-    public void testFindProductWithZeroStock() {
+    public void testFindProductWithZeroStock() throws ProductNotFoundException {
         Currency usd = Currency.getInstance("USD");
         Product product = new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 0, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
 
         assertFalse(productDao.findProducts().contains(product));
+        productDao.delete(product.getId());
     }
 
     @Test
-    public void testFindProductWithNullPrice() {
+    public void testFindProductWithNullPrice() throws ProductNotFoundException {
         Currency usd = Currency.getInstance("USD");
         Product product = new Product("sgs", "Samsung Galaxy S", null, usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
 
         assertFalse(productDao.findProducts().contains(product));
+        productDao.delete(product.getId());
     }
 
     @Test
@@ -105,6 +113,7 @@ public class ArrayListProductDaoTest {
         productDao.save(product);
 
         assertEquals(product.getId(), productDao.getProduct(product.getId()).getId());
+        productDao.delete(product.getId());
     }
 
     @Test(expected = ProductNotFoundException.class)
@@ -135,6 +144,9 @@ public class ArrayListProductDaoTest {
                 productDao.getProduct(p1.getId()));
 
         assertEquals(expected, productDao.findProducts(query));
+        productDao.delete(p1.getId());
+        productDao.delete(p2.getId());
+        productDao.delete(p3.getId());
     }
 
     @Test
@@ -154,6 +166,9 @@ public class ArrayListProductDaoTest {
                 productDao.getProduct(p3.getId()));
 
         assertEquals(expected, productDao.findProducts(query, SortField.description, SortOrder.asc));
+        productDao.delete(p1.getId());
+        productDao.delete(p2.getId());
+        productDao.delete(p3.getId());
     }
 
     @Test
@@ -173,6 +188,9 @@ public class ArrayListProductDaoTest {
                 productDao.getProduct(p1.getId()));
 
         assertEquals(expected, productDao.findProducts(query, SortField.description, SortOrder.desc));
+        productDao.delete(p1.getId());
+        productDao.delete(p2.getId());
+        productDao.delete(p3.getId());
     }
 
     @Test
@@ -192,6 +210,9 @@ public class ArrayListProductDaoTest {
                 productDao.getProduct(p3.getId()));
 
         assertEquals(expected, productDao.findProducts(query, SortField.price, SortOrder.asc));
+        productDao.delete(p1.getId());
+        productDao.delete(p2.getId());
+        productDao.delete(p3.getId());
     }
 
     @Test
@@ -211,6 +232,9 @@ public class ArrayListProductDaoTest {
                 productDao.getProduct(p3.getId()));
 
         assertEquals(expected, productDao.findProducts(query, SortField.price, SortOrder.desc));
+        productDao.delete(p1.getId());
+        productDao.delete(p2.getId());
+        productDao.delete(p3.getId());
     }
 }
 

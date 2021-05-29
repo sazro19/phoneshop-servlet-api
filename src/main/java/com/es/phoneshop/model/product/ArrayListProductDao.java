@@ -13,6 +13,14 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class ArrayListProductDao implements ProductDao {
+    private static ProductDao instance;
+
+    public static synchronized ProductDao getInstance() {
+        if (instance == null) {
+            instance = new ArrayListProductDao();
+        }
+        return instance;
+    }
 
     private List<Product> productList;
 
@@ -27,11 +35,8 @@ public class ArrayListProductDao implements ProductDao {
         LOGGER = Logger.getLogger(ArrayListProductDao.class.getName());
     }
 
-    public ArrayListProductDao() {
-        this.productList = DataGenerator.generateSampleProducts();
-        if (productList.size() != 0) {
-            newId = productList.get(productList.size() - 1).getId();
-        }
+    private ArrayListProductDao() {
+        this.productList = new ArrayList<>();
     }
 
     @Override
@@ -141,6 +146,8 @@ public class ArrayListProductDao implements ProductDao {
             }
             if (!productList.removeIf(product -> id.equals(product.getId()))) {
                 throw new ProductNotFoundException();
+            } else {
+                newId--;
             }
         } finally {
             lock.writeLock().unlock();

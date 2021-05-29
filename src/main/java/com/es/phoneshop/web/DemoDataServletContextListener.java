@@ -1,15 +1,38 @@
-package com.es.phoneshop.data;
+package com.es.phoneshop.web;
 
+import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.ProductDao;
 
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
-public class DataGenerator {
+public class DemoDataServletContextListener implements ServletContextListener {
+    private ProductDao productDao;
 
-    public static List<Product> generateSampleProducts(){
+    public DemoDataServletContextListener() {
+        this.productDao = ArrayListProductDao.getInstance();
+    }
+
+    @Override
+    public void contextInitialized(ServletContextEvent servletContextEvent) {
+        if (Boolean.parseBoolean(servletContextEvent.getServletContext().getInitParameter("insertDemoData"))) {
+            generateSampleProducts().forEach(product -> {
+                productDao.save(product);
+            });
+        }
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+
+    }
+
+    public List<Product> generateSampleProducts(){
         List<Product> data = new ArrayList<>();
         Currency usd = Currency.getInstance("USD");
         data.add(new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
@@ -28,5 +51,4 @@ public class DataGenerator {
 
         return data;
     }
-
 }
