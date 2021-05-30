@@ -1,6 +1,5 @@
 package com.es.phoneshop.model.product;
 
-import com.es.phoneshop.data.DataGenerator;
 import com.es.phoneshop.model.product.exception.ProductNotFoundException;
 
 import java.util.ArrayList;
@@ -45,12 +44,12 @@ public class ArrayListProductDao implements ProductDao {
         try {
             if (id == null) {
                 LOGGER.log(Level.WARNING, "getProduct(Long id) has got null id");
-                throw new ProductNotFoundException();
+                throw new ProductNotFoundException(id);
             }
             return productList.stream()
                     .filter(product -> id.equals(product.getId()))
                     .findAny()
-                    .orElseThrow(ProductNotFoundException::new);
+                    .orElseThrow(() -> new ProductNotFoundException(id));
         } finally {
             lock.readLock().unlock();
         }
@@ -142,10 +141,10 @@ public class ArrayListProductDao implements ProductDao {
         try {
             if (id == null) {
                 LOGGER.log(Level.WARNING, "delete(Long id) has got null id");
-                throw new ProductNotFoundException();
+                throw new ProductNotFoundException(id);
             }
             if (!productList.removeIf(product -> id.equals(product.getId()))) {
-                throw new ProductNotFoundException();
+                throw new ProductNotFoundException(id);
             } else {
                 newId--;
             }

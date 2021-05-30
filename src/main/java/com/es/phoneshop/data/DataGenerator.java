@@ -9,7 +9,7 @@ import java.util.List;
 
 public class DataGenerator {
 
-    public static List<Product> generateSampleProducts(){
+    public List<Product> generateSampleProducts(){
         List<Product> data = new ArrayList<>();
         Currency usd = Currency.getInstance("USD");
         data.add(new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));

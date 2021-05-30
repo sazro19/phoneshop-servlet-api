@@ -19,7 +19,7 @@ public class ArrayListProductDaoTest {
     @Before
     public void setup() {
         productDao = ArrayListProductDao.getInstance();
-        DataGenerator.generateSampleProducts().forEach(product -> {
+        new DataGenerator().generateSampleProducts().forEach(product -> {
             productDao.save(product);
         });
     }
