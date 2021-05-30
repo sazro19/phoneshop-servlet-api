@@ -6,10 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Currency;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -235,6 +232,35 @@ public class ArrayListProductDaoTest {
         productDao.delete(p1.getId());
         productDao.delete(p2.getId());
         productDao.delete(p3.getId());
+    }
+
+    @Test
+    public void testSaveNewPriceHistory() throws ProductNotFoundException {
+        Currency usd = Currency.getInstance("USD");
+        Product p = new Product("p1", "Huawei", new BigDecimal(300), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        productDao.save(p);
+
+        Product updated = new Product(p.getId(),"p1", "Huawei", new BigDecimal(350), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        productDao.save(updated);
+
+        assertEquals(new BigDecimal(350), productDao.getProduct(updated.getId()).getPriceHistoryList().get(0).getPrice());
+        assertEquals(new BigDecimal(300), productDao.getProduct(updated.getId()).getPriceHistoryList().get(1).getPrice());
+
+        productDao.delete(updated.getId());
+    }
+
+    @Test
+    public void testSaveUpdatedProductWithSamePrice() throws ProductNotFoundException {
+        Currency usd = Currency.getInstance("USD");
+        Product p = new Product("p1", "Huawei", new BigDecimal(300), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        productDao.save(p);
+
+        Product updated = new Product(p.getId(),"p1", "Huawei", new BigDecimal(300), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        productDao.save(updated);
+
+        assertEquals(1, productDao.getProduct(updated.getId()).getPriceHistoryList().size());
+
+        productDao.delete(updated.getId());
     }
 }
 
