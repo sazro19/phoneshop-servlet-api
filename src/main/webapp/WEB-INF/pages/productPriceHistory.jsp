@@ -23,7 +23,7 @@
     <c:forEach var="history" items="${product.priceHistoryList}">
       <tr>
         <td>
-          ${history.calendar.get(5)}.${history.calendar.get(2) + 1}.${history.calendar.get(1)}
+          ${history.localDate.getDayOfMonth()}.${history.localDate.getMonthValue()}.${history.localDate.getYear()}
         </td>
         <td class="price">
           <fmt:formatNumber value="${history.price}" type="currency" currencySymbol="${product.currency.symbol}"/>

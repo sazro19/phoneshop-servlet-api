@@ -34,7 +34,6 @@ public class Product {
     }
 
     public Product(String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
-        priceHistoryList = new ArrayList<>();
         this.code = code;
         this.description = description;
         this.price = price;

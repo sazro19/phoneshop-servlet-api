@@ -2,7 +2,6 @@ package com.es.phoneshop.model.product;
 
 import com.es.phoneshop.model.product.exception.ProductNotFoundException;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -62,12 +61,12 @@ public class ArrayListProductDao implements ProductDao {
         lock.readLock().lock();
         try {
             Comparator<Product> comparator;
-            if (SortField.description == sortField) {
+            if (SortField.DESCRIPTION == sortField) {
                 comparator = Comparator.comparing(Product::getDescription);
             } else {
                 comparator = Comparator.comparing(Product::getPrice);
             }
-            if (SortOrder.desc == sortOrder) {
+            if (SortOrder.DESC == sortOrder) {
                 comparator = comparator.reversed();
             }
 

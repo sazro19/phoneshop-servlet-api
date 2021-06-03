@@ -162,7 +162,7 @@ public class ArrayListProductDaoTest {
                 productDao.getProduct(p2.getId()),
                 productDao.getProduct(p3.getId()));
 
-        assertEquals(expected, productDao.findProducts(query, SortField.description, SortOrder.asc));
+        assertEquals(expected, productDao.findProducts(query, SortField.DESCRIPTION, SortOrder.ASC));
         productDao.delete(p1.getId());
         productDao.delete(p2.getId());
         productDao.delete(p3.getId());
@@ -184,7 +184,7 @@ public class ArrayListProductDaoTest {
                 productDao.getProduct(p2.getId()),
                 productDao.getProduct(p1.getId()));
 
-        assertEquals(expected, productDao.findProducts(query, SortField.description, SortOrder.desc));
+        assertEquals(expected, productDao.findProducts(query, SortField.DESCRIPTION, SortOrder.DESC));
         productDao.delete(p1.getId());
         productDao.delete(p2.getId());
         productDao.delete(p3.getId());
@@ -206,7 +206,7 @@ public class ArrayListProductDaoTest {
                 productDao.getProduct(p2.getId()),
                 productDao.getProduct(p3.getId()));
 
-        assertEquals(expected, productDao.findProducts(query, SortField.price, SortOrder.asc));
+        assertEquals(expected, productDao.findProducts(query, SortField.PRICE, SortOrder.ASC));
         productDao.delete(p1.getId());
         productDao.delete(p2.getId());
         productDao.delete(p3.getId());
@@ -228,7 +228,7 @@ public class ArrayListProductDaoTest {
                 productDao.getProduct(p2.getId()),
                 productDao.getProduct(p3.getId()));
 
-        assertEquals(expected, productDao.findProducts(query, SortField.price, SortOrder.desc));
+        assertEquals(expected, productDao.findProducts(query, SortField.PRICE, SortOrder.DESC));
         productDao.delete(p1.getId());
         productDao.delete(p2.getId());
         productDao.delete(p3.getId());

@@ -1,12 +1,11 @@
 package com.es.phoneshop.model.product;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class PriceHistory {
-    private Calendar calendar;
+    private LocalDate localDate;
 
     private BigDecimal price;
 
@@ -15,16 +14,16 @@ public class PriceHistory {
     }
 
     public PriceHistory(BigDecimal price) {
-        this.calendar = new GregorianCalendar();
+        this.localDate = LocalDate.now();
         this.price = price;
     }
 
-    public Calendar getCalendar() {
-        return calendar;
+    public LocalDate getLocalDate() {
+        return localDate;
     }
 
-    public void setCalendar(Calendar calendar) {
-        this.calendar = calendar;
+    public void setLocalDate(LocalDate localDate) {
+        this.localDate = localDate;
     }
 
     public BigDecimal getPrice() {
@@ -40,11 +39,11 @@ public class PriceHistory {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PriceHistory that = (PriceHistory) o;
-        return calendar.equals(that.calendar) && price.equals(that.price);
+        return localDate.equals(that.localDate) && price.equals(that.price);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(calendar, price);
+        return Objects.hash(localDate, price);
     }
 }
