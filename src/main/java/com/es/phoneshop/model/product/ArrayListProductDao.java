@@ -75,7 +75,7 @@ public class ArrayListProductDao implements ProductDao {
                     .filter(this::isPriceNotNull)
                     .filter(this::isProductInStock)
                     .filter(p -> isProductMatchesAnyQuery(p, query))
-                    .sorted((p1, p2) -> Long.compare(countOccurrence(p2, query), countOccurrence(p1, query)))
+                    .sorted((p1, p2) -> Double.compare(countOccurrence(p2, query), countOccurrence(p1, query)))
                     .collect(Collectors.toList());
 
             if (sortField != null) {
@@ -98,7 +98,7 @@ public class ArrayListProductDao implements ProductDao {
                     .filter(this::isPriceNotNull)
                     .filter(this::isProductInStock)
                     .filter(p -> isProductMatchesAnyQuery(p, query))
-                    .sorted((p1, p2) -> Long.compare(countOccurrence(p2, query), countOccurrence(p1, query)))
+                    .sorted((p1, p2) -> Double.compare(countOccurrence(p2, query), countOccurrence(p1, query)))
                     .collect(Collectors.toList());
             return result;
         } finally {
@@ -178,15 +178,19 @@ public class ArrayListProductDao implements ProductDao {
                 .anyMatch(word -> Arrays.asList(product.getDescription().split(" ")).contains(word));
     }
 
-    private long countOccurrence(Product product, String query) {
+    private double countOccurrence(Product product, String query) {
         if (query == null || query.isEmpty()) {
             return 0;
         }
         List<String> words = new ArrayList<>(Arrays.asList(query.trim().split("\\s+")));
-        Stream<String> descriptionWords = Arrays.stream(product.getDescription().split(" "));
-        return descriptionWords
+        List<String> descriptionWords = Arrays.asList(product.getDescription().split(" "));
+        long occurrence = descriptionWords.stream()
                 .filter(words::contains)
                 .count();
+        if (occurrence == descriptionWords.size()) {
+            return (double) occurrence;
+        }
+        return (double) occurrence / descriptionWords.size();
     }
 
     private boolean isUpdatedProductWithNewPrice(Product updated, Product inList) {
