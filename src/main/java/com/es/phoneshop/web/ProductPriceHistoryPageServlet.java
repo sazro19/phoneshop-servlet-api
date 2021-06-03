@@ -27,4 +27,7 @@ public class ProductPriceHistoryPageServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/pages/productPriceHistory.jsp").forward(request, response);
     }
 
+    public void setProductDao(ProductDao productDao) {
+        this.productDao = productDao;
+    }
 }

@@ -27,4 +27,8 @@ public class ProductDetailsPageServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
     }
 
+    public void setProductDao(ProductDao productDao) {
+        this.productDao = productDao;
+    }
+
 }

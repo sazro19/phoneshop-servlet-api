@@ -29,8 +29,8 @@ public class Product {
         this.currency = currency;
         this.stock = stock;
         this.imageUrl = imageUrl;
-        priceHistoryList = new ArrayList<>();
-        priceHistoryList.add(new PriceHistory(price));
+        this.priceHistoryList = new ArrayList<>();
+        this.priceHistoryList.add(new PriceHistory(price));
     }
 
     public Product(String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
@@ -40,8 +40,8 @@ public class Product {
         this.currency = currency;
         this.stock = stock;
         this.imageUrl = imageUrl;
-        priceHistoryList = new ArrayList<>();
-        priceHistoryList.add(new PriceHistory(price));
+        this.priceHistoryList = new ArrayList<>();
+        this.priceHistoryList.add(new PriceHistory(price));
     }
 
     public Long getId() {

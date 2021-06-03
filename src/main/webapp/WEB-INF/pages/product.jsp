@@ -5,33 +5,32 @@
 
 <jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
 <tags:master pageTitle="Product">
-  <p>
+  <br>
     ${product.description}
+    <br><img src="${product.imageUrl}">
   </p>
-  <table>
-    <tr>
-      <td>Image</td>
-      <td>
-        <img src="${product.imageUrl}">
-      </td>
-    </tr>
+  <table border="1" width="50%" cellpadding="5">
       <tr>
-        <td>code</td>
-        <td>
+        <th>
+          Code
+        </th>
+        <th>
+          Price
+        </th>
+        <th>
+          Stock
+        </th>
+      </tr>
+      <tr>
+        <th>
           ${product.code}
-        </td>
-      </tr>
-      <tr>
-        <td>price</td>
-        <td>
+        </th>
+        <th>
           <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
-        </td>
-      </tr>
-      <tr>
-        <td>stock</td>
-        <td>
+        </th>
+        <th>
           ${product.stock}
-        </td>
+        </th>
       </tr>
   </table>
 </tags:master>
