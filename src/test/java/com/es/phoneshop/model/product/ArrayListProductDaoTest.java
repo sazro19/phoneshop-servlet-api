@@ -139,8 +139,8 @@ public class ArrayListProductDaoTest {
         String query = "Huawei X";
 
         List<Product> expected = Arrays.asList(productDao.getProduct(p2.getId()),
-                productDao.getProduct(p1.getId()),
-                productDao.getProduct(p3.getId()));
+                productDao.getProduct(p3.getId()),
+                productDao.getProduct(p1.getId()));
 
         assertEquals(expected, productDao.findProducts(query));
     }
