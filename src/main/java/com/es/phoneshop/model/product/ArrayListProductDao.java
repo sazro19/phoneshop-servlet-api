@@ -11,6 +11,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ArrayListProductDao implements ProductDao {
     private static ProductDao instance;
@@ -126,12 +127,7 @@ public class ArrayListProductDao implements ProductDao {
         try {
             if (product.getId() != null) {
                 List<PriceHistory> oldPrices = new ArrayList<>();
-                if (productList.removeIf(p -> {
-                    if (product.getId().equals(p.getId()) && !product.getPrice().equals(p.getPrice())) {
-                        oldPrices.addAll(p.getPriceHistoryList());
-                    }
-                    return product.getId().equals(p.getId());
-                })) {
+                if (productList.removeIf(p -> isProductForDeleting(product, p, oldPrices))) {
                     product.getPriceHistoryList().addAll(oldPrices);
                 }
                 productList.add(product);
@@ -178,8 +174,8 @@ public class ArrayListProductDao implements ProductDao {
         if (query == null || query.isEmpty()) {
             return true;
         }
-        List<String> words = new ArrayList<>(Arrays.asList(query.split(" ")));
-        return words.stream()
+        Stream<String> words = Arrays.stream(query.trim().split("\\s+"));
+        return words
                 .anyMatch(word -> Arrays.asList(product.getDescription().split(" ")).contains(word));
     }
 
@@ -187,11 +183,22 @@ public class ArrayListProductDao implements ProductDao {
         if (query == null || query.isEmpty()) {
             return 0;
         }
-        List<String> words = new ArrayList<>(Arrays.asList(query.split(" ")));
-        List<String> descriptionWords = new ArrayList<>(Arrays.asList(product.getDescription().split(" ")));
-        return descriptionWords.stream()
+        List<String> words = new ArrayList<>(Arrays.asList(query.trim().split("\\s+")));
+        Stream<String> descriptionWords = Arrays.stream(product.getDescription().split(" "));
+        return descriptionWords
                 .filter(words::contains)
                 .count();
+    }
+
+    private boolean isUpdatedProductWithNewPrice(Product updated, Product inList) {
+        return updated.getId().equals(inList.getId()) && !updated.getPrice().equals(inList.getPrice());
+    }
+
+    private boolean isProductForDeleting(Product updated, Product inList, List<PriceHistory> oldPrices) {
+        if (isUpdatedProductWithNewPrice(updated, inList)) {
+            oldPrices.addAll(inList.getPriceHistoryList());
+        }
+        return updated.getId().equals(inList.getId());
     }
 }
 
