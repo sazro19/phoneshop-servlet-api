@@ -5,32 +5,60 @@
 
 <jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
 <tags:master pageTitle="Product">
+  <p>
+    Cart: ${cart}
   <br>
     ${product.description}
     <br><img src="${product.imageUrl}">
   </p>
-  <table border="1" width="50%" cellpadding="5">
-      <tr>
-        <th>
-          Code
-        </th>
-        <th>
-          Price
-        </th>
-        <th>
-          Stock
-        </th>
-      </tr>
-      <tr>
-        <th>
-          ${product.code}
-        </th>
-        <th>
-          <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
-        </th>
-        <th>
-          ${product.stock}
-        </th>
-      </tr>
-  </table>
+  <c:if test="${not empty param.message and empty error}">
+    <span class="success">
+      ${param.message}
+    </span>
+  </c:if>
+  <c:if test="${not empty error}">
+    <span class="error">
+        Error occurred during adding to cart
+    </span>
+  </c:if>
+  <form method="post">
+    <table border="1" width="50%" cellpadding="5">
+        <tr>
+          <th>
+            Code
+          </th>
+          <th>
+            Price
+          </th>
+          <th>
+            Stock
+          </th>
+          <th>
+            Quantity
+          </th>
+        </tr>
+        <tr>
+          <th>
+            ${product.code}
+          </th>
+          <th>
+            <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+          </th>
+          <th>
+            ${product.stock}
+          </th>
+          <th>
+              <input name="quantity" value="${not empty error ? param.quantity : 1}">
+              <c:if test="${not empty error}">
+                <span class="error">
+                  '${param.quantity}': ${error}
+                </span>
+              </c:if>
+          </th>
+        </tr>
+    </table>
+    <p>
+      <button>Add to cart</button>
+    </p>
+  </form>
 </tags:master>
