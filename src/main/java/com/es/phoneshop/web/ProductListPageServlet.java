@@ -39,4 +39,7 @@ public class ProductListPageServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
 
+    public void setRecentlyViewedService(RecentlyViewedService recentlyViewedService) {
+        this.recentlyViewedService = recentlyViewedService;
+    }
 }
