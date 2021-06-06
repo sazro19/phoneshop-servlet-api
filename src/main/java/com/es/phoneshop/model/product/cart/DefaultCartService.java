@@ -5,8 +5,13 @@ import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.cart.exception.OutOfStockException;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 public class DefaultCartService implements CartService {
-    private Cart cart = new Cart();
+    private static final String CART_SESSION_ATTRIBUTE = DefaultCartService.class.getName() + ".cart";
+
+    private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     private ProductDao productDao;
 
@@ -23,28 +28,42 @@ public class DefaultCartService implements CartService {
     }
 
     @Override
-    public Cart getCart() {
-        return cart;
+    public Cart getCart(HttpServletRequest request) {
+        lock.readLock().lock();
+        try {
+            Cart cart = (Cart) request.getSession().getAttribute(CART_SESSION_ATTRIBUTE);
+            if (cart == null) {
+                request.getSession().setAttribute(CART_SESSION_ATTRIBUTE, cart = new Cart());
+            }
+            return cart;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
-    public void add(Long productId, int quantity) throws OutOfStockException {
-        Product product = productDao.getProduct(productId);
-        CartItem cartItem = new CartItem(product, quantity);
-        if (cart.getItems().contains(cartItem)) {
-            int index = cart.getItems().indexOf(cartItem);
-            int oldQuantity = cart.getItems().get(index).getQuantity();
-            int newQuantity = oldQuantity + quantity;
-            if (isStockNotAvailable(product, newQuantity)) {
-                throw new OutOfStockException(product, newQuantity, product.getStock() - oldQuantity);
+    public void add(Cart cart, Long productId, int quantity) throws OutOfStockException {
+        lock.writeLock().lock();
+        try {
+            Product product = productDao.getProduct(productId);
+            CartItem cartItem = new CartItem(product, quantity);
+            if (cart.getItems().contains(cartItem)) {
+                int index = cart.getItems().indexOf(cartItem);
+                int oldQuantity = cart.getItems().get(index).getQuantity();
+                int newQuantity = oldQuantity + quantity;
+                if (isStockNotAvailable(product, newQuantity)) {
+                    throw new OutOfStockException(product, newQuantity, product.getStock() - oldQuantity);
+                }
+                cart.getItems().get(index).setQuantity(newQuantity);
+                return;
             }
-            cart.getItems().get(index).setQuantity(newQuantity);
-            return;
+            if (isStockNotAvailable(product, quantity)) {
+                throw new OutOfStockException(product, quantity, product.getStock());
+            }
+            cart.getItems().add(cartItem);
+        } finally {
+            lock.writeLock().unlock();
         }
-        if (isStockNotAvailable(product, quantity)) {
-            throw new OutOfStockException(product, quantity, product.getStock());
-        }
-        cart.getItems().add(cartItem);
     }
 
     private boolean isStockNotAvailable(Product product, int newQuantity) {
