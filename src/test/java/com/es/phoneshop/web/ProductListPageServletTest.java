@@ -1,5 +1,7 @@
 package com.es.phoneshop.web;
 
+import com.es.phoneshop.model.product.viewed.RecentlyViewedContainer;
+import com.es.phoneshop.model.product.viewed.RecentlyViewedService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,13 +29,17 @@ public class ProductListPageServletTest {
     private RequestDispatcher requestDispatcher;
     @Mock
     private ServletConfig config;
+    @Mock
+    private RecentlyViewedService service;
 
     private ProductListPageServlet servlet = new ProductListPageServlet();
 
     @Before
     public void setup() throws ServletException {
         servlet.init(config);
+        servlet.setRecentlyViewedService(service);
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+        when(service.getContainer(request)).thenReturn(new RecentlyViewedContainer());
     }
 
     @Test
@@ -42,5 +48,6 @@ public class ProductListPageServletTest {
 
         verify(requestDispatcher).forward(request, response);
         verify(request).setAttribute(eq("products"), any());
+        verify(request).setAttribute(eq("viewed"), any());
     }
 }

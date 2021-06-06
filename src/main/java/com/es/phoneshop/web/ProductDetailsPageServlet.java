@@ -84,4 +84,11 @@ public class ProductDetailsPageServlet extends HttpServlet {
         this.productDao = productDao;
     }
 
+    public void setRecentlyViewedService(RecentlyViewedService recentlyViewedService) {
+        this.recentlyViewedService = recentlyViewedService;
+    }
+
+    public void setCartService(CartService cartService) {
+        this.cartService = cartService;
+    }
 }
