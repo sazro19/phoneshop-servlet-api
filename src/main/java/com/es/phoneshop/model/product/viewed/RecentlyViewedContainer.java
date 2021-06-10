@@ -13,7 +13,7 @@ public class RecentlyViewedContainer {
         this.threeLastProducts = new ArrayDeque<>();
     }
 
-    public void addProduct(Product product) {
+    protected void addProduct(Product product) {
         if (threeLastProducts.contains(product)) {
             Product first = threeLastProducts.peek();
             if (first.equals(product)) {

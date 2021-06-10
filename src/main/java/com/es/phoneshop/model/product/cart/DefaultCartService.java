@@ -6,6 +6,7 @@ import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.cart.exception.OutOfStockException;
 
 import javax.servlet.http.HttpSession;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DefaultCartService implements CartService {
@@ -29,7 +30,7 @@ public class DefaultCartService implements CartService {
 
     @Override
     public Cart getCart(HttpSession session) {
-        lock.readLock().lock();
+        lock.writeLock().lock();
         try {
             Cart cart = (Cart) session.getAttribute(CART_SESSION_ATTRIBUTE);
             if (cart == null) {
@@ -37,7 +38,7 @@ public class DefaultCartService implements CartService {
             }
             return cart;
         } finally {
-            lock.readLock().unlock();
+            lock.writeLock().unlock();
         }
     }
 
@@ -46,20 +47,22 @@ public class DefaultCartService implements CartService {
         lock.writeLock().lock();
         try {
             Product product = productDao.getProduct(productId);
-            CartItem cartItem = new CartItem(product, quantity);
             if (isStockNotAvailable(product, quantity)) {
                 throw new OutOfStockException(product, quantity, product.getStock());
             }
-            if (cart.getItems().contains(cartItem)) {
-                int index = cart.getItems().indexOf(cartItem);
-                int oldQuantity = cart.getItems().get(index).getQuantity();
+            Optional<CartItem> containedCartItem = cart.getItems().stream()
+                    .filter(cartItem -> cartItem.getProduct().getId().equals(product.getId()))
+                    .findFirst();
+            if (containedCartItem.isPresent()) {
+                int oldQuantity = containedCartItem.get().getQuantity();
                 int newQuantity = oldQuantity + quantity;
                 if (isStockNotAvailable(product, newQuantity)) {
                     throw new OutOfStockException(product, newQuantity, product.getStock() - oldQuantity);
                 }
-                cart.getItems().get(index).setQuantity(newQuantity);
+                containedCartItem.get().setQuantity(newQuantity);
                 return;
             }
+            CartItem cartItem = new CartItem(product, quantity);
             cart.getItems().add(cartItem);
         } finally {
             lock.writeLock().unlock();
