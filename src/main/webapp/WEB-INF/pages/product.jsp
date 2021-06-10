@@ -64,21 +64,5 @@
   <p>
     <b>Recently viewed</b>
   </p>
-  <table>
-    <c:forEach var="product" items="${viewed.threeLastProducts}">
-      <th>
-        <br>
-          <img class="product-tile" src="${product.imageUrl}">
-        </br>
-        <br>
-          <a href="${pageContext.servletContext.contextPath}/products/${product.id}">
-              ${product.description}
-          </a>
-        </br>
-        <br>
-          <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
-        </br>
-      </th>
-    </c:forEach>
-  </table>
+  <tags:recentlyViewed recentlyViewedList="${viewed.threeLastProducts}"/>
 </tags:master>

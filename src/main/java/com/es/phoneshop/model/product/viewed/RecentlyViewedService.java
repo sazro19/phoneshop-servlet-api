@@ -1,8 +1,8 @@
 package com.es.phoneshop.model.product.viewed;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 public interface RecentlyViewedService {
-    RecentlyViewedContainer getContainer(HttpServletRequest request);
+    RecentlyViewedContainer getContainer(HttpSession session);
     void add(RecentlyViewedContainer container, Long productId);
 }

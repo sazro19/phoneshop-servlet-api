@@ -5,7 +5,7 @@ import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.cart.exception.OutOfStockException;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DefaultCartService implements CartService {
@@ -28,12 +28,12 @@ public class DefaultCartService implements CartService {
     }
 
     @Override
-    public Cart getCart(HttpServletRequest request) {
+    public Cart getCart(HttpSession session) {
         lock.readLock().lock();
         try {
-            Cart cart = (Cart) request.getSession().getAttribute(CART_SESSION_ATTRIBUTE);
+            Cart cart = (Cart) session.getAttribute(CART_SESSION_ATTRIBUTE);
             if (cart == null) {
-                request.getSession().setAttribute(CART_SESSION_ATTRIBUTE, cart = new Cart());
+                session.setAttribute(CART_SESSION_ATTRIBUTE, cart = new Cart());
             }
             return cart;
         } finally {
@@ -47,6 +47,9 @@ public class DefaultCartService implements CartService {
         try {
             Product product = productDao.getProduct(productId);
             CartItem cartItem = new CartItem(product, quantity);
+            if (isStockNotAvailable(product, quantity)) {
+                throw new OutOfStockException(product, quantity, product.getStock());
+            }
             if (cart.getItems().contains(cartItem)) {
                 int index = cart.getItems().indexOf(cartItem);
                 int oldQuantity = cart.getItems().get(index).getQuantity();
@@ -56,9 +59,6 @@ public class DefaultCartService implements CartService {
                 }
                 cart.getItems().get(index).setQuantity(newQuantity);
                 return;
-            }
-            if (isStockNotAvailable(product, quantity)) {
-                throw new OutOfStockException(product, quantity, product.getStock());
             }
             cart.getItems().add(cartItem);
         } finally {
