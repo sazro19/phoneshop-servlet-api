@@ -3,9 +3,8 @@ package com.es.phoneshop.model.product.viewed;
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
-import com.es.phoneshop.model.product.cart.Cart;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DefaultRecentlyViewedService implements RecentlyViewedService{
@@ -28,14 +27,13 @@ public class DefaultRecentlyViewedService implements RecentlyViewedService{
     }
 
     @Override
-    public RecentlyViewedContainer getContainer(HttpServletRequest request) {
+    public RecentlyViewedContainer getContainer(HttpSession session) {
         lock.readLock().lock();
         try {
-            RecentlyViewedContainer container = (RecentlyViewedContainer) request.getSession()
+            RecentlyViewedContainer container = (RecentlyViewedContainer) session
                     .getAttribute(RECENTLY_VIEWED_SESSION_ATTRIBUTE);
             if (container == null) {
-                request.getSession()
-                        .setAttribute(RECENTLY_VIEWED_SESSION_ATTRIBUTE, container = new RecentlyViewedContainer());
+                session.setAttribute(RECENTLY_VIEWED_SESSION_ATTRIBUTE, container = new RecentlyViewedContainer());
             }
             return container;
         } finally {

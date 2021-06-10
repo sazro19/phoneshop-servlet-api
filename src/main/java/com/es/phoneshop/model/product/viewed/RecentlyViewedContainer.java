@@ -7,6 +7,8 @@ import java.util.*;
 public class RecentlyViewedContainer {
     private Deque<Product> threeLastProducts;
 
+    private static final int MAX_RECENTLY_VIEWED = 3;
+
     public RecentlyViewedContainer() {
         this.threeLastProducts = new ArrayDeque<>();
     }
@@ -28,7 +30,7 @@ public class RecentlyViewedContainer {
             }
             return;
         }
-        if (threeLastProducts.size() == 3) {
+        if (threeLastProducts.size() == MAX_RECENTLY_VIEWED) {
             threeLastProducts.removeLast();
             threeLastProducts.addFirst(product);
             return;

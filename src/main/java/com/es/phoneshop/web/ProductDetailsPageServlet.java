@@ -1,7 +1,6 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
-import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.cart.Cart;
 import com.es.phoneshop.model.product.cart.CartService;
@@ -27,6 +26,10 @@ public class ProductDetailsPageServlet extends HttpServlet {
 
     private RecentlyViewedService recentlyViewedService;
 
+    private static final String ERROR_ATTRIBUTE = "error";
+
+    private static final String MESSAGE_ATTRIBUTE = "message";
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -38,12 +41,16 @@ public class ProductDetailsPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long productId = parseProductId(request);
-        RecentlyViewedContainer container = recentlyViewedService.getContainer(request);
+        RecentlyViewedContainer container = recentlyViewedService.getContainer(request.getSession());
+        RecentlyViewedContainer withoutOpened = new RecentlyViewedContainer();
+        withoutOpened.getThreeLastProducts().addAll(container.getThreeLastProducts());
         recentlyViewedService.add(container, productId);
 
         request.setAttribute("product", productDao.getProduct(productId));
-        request.setAttribute("cart", cartService.getCart(request));
-        request.setAttribute("viewed", container);
+        request.setAttribute("cart", cartService.getCart(request.getSession()));
+        request.setAttribute("viewed", withoutOpened);
+
+
 
         request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
     }
@@ -57,19 +64,19 @@ public class ProductDetailsPageServlet extends HttpServlet {
             NumberFormat format = NumberFormat.getInstance(request.getLocale());
             quantity = format.parse(quantityString).intValue();
         } catch (ParseException e) {
-            request.setAttribute("error", "Not a number");
+            request.setAttribute(ERROR_ATTRIBUTE, "Not a number");
             doGet(request, response);
             return;
         }
         try {
-            Cart cart = cartService.getCart(request);
+            Cart cart = cartService.getCart(request.getSession());
             cartService.add(cart, productId, quantity);
         } catch (OutOfStockException e) {
-            request.setAttribute("error", "Out of stock, available " + e.getStockAvailable());
+            request.setAttribute(ERROR_ATTRIBUTE, "Out of stock, available " + e.getStockAvailable());
             doGet(request, response);
             return;
         }
-        request.setAttribute("message", "Product added to cart");
+        request.setAttribute(MESSAGE_ATTRIBUTE, "Product added to cart");
 
         response.sendRedirect(request.getContextPath() + "/products/" +
                 productId + "?message=Product added to cart");

@@ -39,7 +39,7 @@ public class ProductListPageServletTest {
         servlet.init(config);
         servlet.setRecentlyViewedService(service);
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
-        when(service.getContainer(request)).thenReturn(new RecentlyViewedContainer());
+        when(service.getContainer(request.getSession())).thenReturn(new RecentlyViewedContainer());
     }
 
     @Test
