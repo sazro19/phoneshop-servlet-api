@@ -28,7 +28,7 @@ public class DefaultRecentlyViewedService implements RecentlyViewedService{
 
     @Override
     public RecentlyViewedContainer getContainer(HttpSession session) {
-        lock.readLock().lock();
+        lock.writeLock().lock();
         try {
             RecentlyViewedContainer container = (RecentlyViewedContainer) session
                     .getAttribute(RECENTLY_VIEWED_SESSION_ATTRIBUTE);
@@ -37,7 +37,7 @@ public class DefaultRecentlyViewedService implements RecentlyViewedService{
             }
             return container;
         } finally {
-            lock.readLock().unlock();
+            lock.writeLock().unlock();
         }
     }
 
