@@ -3,6 +3,7 @@ package com.es.phoneshop.model.product.viewed;
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
+import com.es.phoneshop.model.product.lock.SessionLock;
 
 import javax.servlet.http.HttpSession;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -28,16 +29,14 @@ public class DefaultRecentlyViewedService implements RecentlyViewedService{
 
     @Override
     public RecentlyViewedContainer getContainer(HttpSession session) {
-        lock.writeLock().lock();
-        try {
+        Object sessionLock = SessionLock.getSessionLock(session, null);
+        synchronized (sessionLock){
             RecentlyViewedContainer container = (RecentlyViewedContainer) session
                     .getAttribute(RECENTLY_VIEWED_SESSION_ATTRIBUTE);
             if (container == null) {
                 session.setAttribute(RECENTLY_VIEWED_SESSION_ATTRIBUTE, container = new RecentlyViewedContainer());
             }
             return container;
-        } finally {
-            lock.writeLock().unlock();
         }
     }
 
