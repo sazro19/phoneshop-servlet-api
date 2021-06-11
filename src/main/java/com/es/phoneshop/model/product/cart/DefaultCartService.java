@@ -4,6 +4,7 @@ import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.cart.exception.OutOfStockException;
+import com.es.phoneshop.model.product.lock.SessionLock;
 
 import javax.servlet.http.HttpSession;
 import java.util.Optional;
@@ -30,15 +31,13 @@ public class DefaultCartService implements CartService {
 
     @Override
     public Cart getCart(HttpSession session) {
-        lock.writeLock().lock();
-        try {
+        Object sessionLock = SessionLock.getSessionLock(session, null);
+        synchronized (sessionLock) {
             Cart cart = (Cart) session.getAttribute(CART_SESSION_ATTRIBUTE);
             if (cart == null) {
                 session.setAttribute(CART_SESSION_ATTRIBUTE, cart = new Cart());
             }
             return cart;
-        } finally {
-            lock.writeLock().unlock();
         }
     }
 
