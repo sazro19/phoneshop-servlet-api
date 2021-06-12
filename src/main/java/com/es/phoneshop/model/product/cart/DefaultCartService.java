@@ -49,9 +49,7 @@ public class DefaultCartService implements CartService {
             if (isStockNotAvailable(product, quantity)) {
                 throw new OutOfStockException(product, quantity, product.getStock());
             }
-            Optional<CartItem> containedCartItem = cart.getItems().stream()
-                    .filter(cartItem -> cartItem.getProduct().getId().equals(product.getId()))
-                    .findAny();
+            Optional<CartItem> containedCartItem = getCartItemByProductId(cart, productId);
             if (containedCartItem.isPresent()) {
                 int oldQuantity = containedCartItem.get().getQuantity();
                 int newQuantity = oldQuantity + quantity;
@@ -66,6 +64,32 @@ public class DefaultCartService implements CartService {
         } finally {
             lock.writeLock().unlock();
         }
+    }
+
+    @Override
+    public void update(Cart cart, Long productId, int quantity) throws OutOfStockException {
+        lock.writeLock().lock();
+        try {
+            Product product = productDao.getProduct(productId);
+            if (isStockNotAvailable(product, quantity)) {
+                throw new OutOfStockException(product, quantity, product.getStock());
+            }
+            Optional<CartItem> containedCartItem = getCartItemByProductId(cart, productId);
+            if (containedCartItem.isPresent()) {
+                containedCartItem.get().setQuantity(quantity);
+                return;
+            }
+            CartItem cartItem = new CartItem(product, quantity);
+            cart.getItems().add(cartItem);
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    private Optional<CartItem> getCartItemByProductId(Cart cart, Long productId) {
+        return cart.getItems().stream()
+                .filter(cartItem -> cartItem.getProduct().getId().equals(productId))
+                .findFirst();
     }
 
     private boolean isStockNotAvailable(Product product, int newQuantity) {
