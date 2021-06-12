@@ -45,7 +45,7 @@ public class DefaultRecentlyViewedServiceTest {
         service.add(container, p3.getId());
 
         long i = 1L;
-        for (Product product : container.getThreeLastProducts()) {
+        for (Product product : service.getThreeRecentlyViewedProducts(container)) {
             assertEquals(product, productDao.getProduct(i++));
         }
     }
@@ -67,7 +67,7 @@ public class DefaultRecentlyViewedServiceTest {
         service.add(container, p2.getId());
 
         long i = 1L;
-        for (Product product : container.getThreeLastProducts()) {
+        for (Product product : service.getThreeRecentlyViewedProducts(container)) {
             assertEquals(product, productDao.getProduct(i++));
         }
     }

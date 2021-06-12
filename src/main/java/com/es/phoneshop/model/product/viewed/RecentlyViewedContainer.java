@@ -38,7 +38,7 @@ public class RecentlyViewedContainer {
         threeLastProducts.addFirst(product);
     }
 
-    public Deque<Product> getThreeLastProducts() {
-        return threeLastProducts;
+    protected Deque<Product> getThreeLastProducts() {
+        return new ArrayDeque<>(threeLastProducts);
     }
 }
