@@ -49,5 +49,5 @@
   <p>
     <b>Recently viewed</b>
   </p>
-  <tags:recentlyViewed recentlyViewedList="${viewed.threeLastProducts}"/>
+  <tags:recentlyViewed recentlyViewedList="${viewed}"/>
 </tags:master>

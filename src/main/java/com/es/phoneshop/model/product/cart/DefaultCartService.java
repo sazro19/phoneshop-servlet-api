@@ -51,7 +51,7 @@ public class DefaultCartService implements CartService {
             }
             Optional<CartItem> containedCartItem = cart.getItems().stream()
                     .filter(cartItem -> cartItem.getProduct().getId().equals(product.getId()))
-                    .findFirst();
+                    .findAny();
             if (containedCartItem.isPresent()) {
                 int oldQuantity = containedCartItem.get().getQuantity();
                 int newQuantity = oldQuantity + quantity;

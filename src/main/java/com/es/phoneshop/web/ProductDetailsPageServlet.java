@@ -41,16 +41,14 @@ public class ProductDetailsPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long productId = parseProductId(request);
+
         RecentlyViewedContainer container = recentlyViewedService.getContainer(request.getSession());
-        RecentlyViewedContainer withoutOpened = new RecentlyViewedContainer();
-        withoutOpened.getThreeLastProducts().addAll(container.getThreeLastProducts());
-        recentlyViewedService.add(container, productId);
 
         request.setAttribute("product", productDao.getProduct(productId));
         request.setAttribute("cart", cartService.getCart(request.getSession()));
-        request.setAttribute("viewed", withoutOpened);
+        request.setAttribute("viewed", recentlyViewedService.getThreeRecentlyViewedProducts(container));
 
-
+        recentlyViewedService.add(container, productId);
 
         request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
     }

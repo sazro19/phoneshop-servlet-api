@@ -6,6 +6,7 @@ import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.lock.SessionLock;
 
 import javax.servlet.http.HttpSession;
+import java.util.Deque;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DefaultRecentlyViewedService implements RecentlyViewedService{
@@ -48,6 +49,16 @@ public class DefaultRecentlyViewedService implements RecentlyViewedService{
             container.addProduct(product);
         } finally {
             lock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public Deque<Product> getThreeRecentlyViewedProducts(RecentlyViewedContainer container) {
+        lock.readLock().lock();
+        try {
+            return container.getThreeLastProducts();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 }

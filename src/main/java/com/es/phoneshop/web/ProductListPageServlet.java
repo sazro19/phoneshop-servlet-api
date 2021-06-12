@@ -35,7 +35,8 @@ public class ProductListPageServlet extends HttpServlet {
         request.setAttribute("products", productDao.findProducts(query,
                 Optional.ofNullable(sortField).map(SortField::valueOf).orElse(null),
                 Optional.ofNullable(sortOrder).map(SortOrder::valueOf).orElse(null)));
-        request.setAttribute("viewed", recentlyViewedService.getContainer(request.getSession()));
+        request.setAttribute("viewed", recentlyViewedService
+                .getThreeRecentlyViewedProducts(recentlyViewedService.getContainer(request.getSession())));
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
 
