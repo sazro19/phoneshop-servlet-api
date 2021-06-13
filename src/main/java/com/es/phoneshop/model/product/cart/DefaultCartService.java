@@ -7,6 +7,7 @@ import com.es.phoneshop.model.product.cart.exception.OutOfStockException;
 import com.es.phoneshop.model.product.lock.SessionLock;
 
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -57,10 +58,12 @@ public class DefaultCartService implements CartService {
                     throw new OutOfStockException(product, newQuantity, product.getStock() - oldQuantity);
                 }
                 containedCartItem.get().setQuantity(newQuantity);
+                updateTotalQuantityAndPrice(cart);
                 return;
             }
             CartItem cartItem = new CartItem(product, quantity);
             cart.getItems().add(cartItem);
+            updateTotalQuantityAndPrice(cart);
         } finally {
             lock.writeLock().unlock();
         }
@@ -77,11 +80,14 @@ public class DefaultCartService implements CartService {
             Optional<CartItem> containedCartItem = getCartItemByProductId(cart, productId);
             if (containedCartItem.isPresent()) {
                 containedCartItem.get().setQuantity(quantity);
+                updateTotalQuantityAndPrice(cart);
                 return;
             }
             CartItem cartItem = new CartItem(product, quantity);
             cart.getItems().add(cartItem);
+            updateTotalQuantityAndPrice(cart);
         } finally {
+            updateTotalQuantityAndPrice(cart);
             lock.writeLock().unlock();
         }
     }
@@ -91,6 +97,7 @@ public class DefaultCartService implements CartService {
         lock.writeLock().lock();
         try {
             cart.getItems().removeIf(cartItem -> productId.equals(cartItem.getProduct().getId()));
+            updateTotalQuantityAndPrice(cart);
         } finally {
             lock.writeLock().unlock();
         }
@@ -100,6 +107,20 @@ public class DefaultCartService implements CartService {
         return cart.getItems().stream()
                 .filter(cartItem -> cartItem.getProduct().getId().equals(productId))
                 .findFirst();
+    }
+
+    private void updateTotalQuantityAndPrice(Cart cart) {
+        cart.setTotalQuantity(cart.getItems().stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum());
+        cart.setTotalPrice(cart.getItems().stream()
+                .map(this::calcTotalPriceInCardItem)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+    }
+
+    private BigDecimal calcTotalPriceInCardItem(CartItem cartItem) {
+        return cartItem.getProduct().getPrice()
+                .multiply(BigDecimal.valueOf(cartItem.getQuantity()));
     }
 
     private boolean isStockNotAvailable(Product product, int newQuantity) {
