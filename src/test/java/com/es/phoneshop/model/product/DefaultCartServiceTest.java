@@ -60,13 +60,77 @@ public class DefaultCartServiceTest {
     }
 
     @Test(expected = OutOfStockException.class)
-    public void testOutOfStockException() throws OutOfStockException {
+    public void testAddThrowsOutOfStockException() throws OutOfStockException {
         Cart cart = new Cart();
         Currency usd = Currency.getInstance("USD");
         Product product = new Product("test", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
 
         cartService.add(cart, product.getId(), 200);
+    }
+
+    @Test
+    public void testUpdateCart() throws OutOfStockException {
+        Cart cart = new Cart();
+        Currency usd = Currency.getInstance("USD");
+        Product product = new Product("test", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        productDao.save(product);
+
+        cartService.add(cart, product.getId(), 5);
+
+        cartService.update(cart, product.getId(), 10);
+
+        assertEquals(10, cart.getItems().get(0).getQuantity());
+    }
+
+    @Test(expected = OutOfStockException.class)
+    public void testUpdateThrowsOutOfStockException() throws OutOfStockException {
+        Cart cart = new Cart();
+        Currency usd = Currency.getInstance("USD");
+        Product product = new Product("test", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        productDao.save(product);
+
+        cartService.update(cart, product.getId(), 200);
+    }
+
+    @Test
+    public void testTotalQuantityAndPrice() throws OutOfStockException {
+        Cart cart = new Cart();
+        Currency usd = Currency.getInstance("USD");
+        Product p1 = new Product("test1", "Samsung Galaxy S1", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        Product p2 = new Product("test2", "Samsung Galaxy S2", new BigDecimal(200), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        productDao.save(p1);
+        productDao.save(p2);
+
+        cartService.add(cart, p1.getId(), 5);
+        cartService.add(cart, p2.getId(), 10);
+
+        assertEquals(15, cart.getTotalQuantity());
+        assertEquals(BigDecimal.valueOf(2500), cart.getTotalPrice());
+
+        cartService.update(cart, p2.getId(), 5);
+
+        assertEquals(10, cart.getTotalQuantity());
+        assertEquals(BigDecimal.valueOf(1500), cart.getTotalPrice());
+    }
+
+    @Test
+    public void testDeleteFromCart() throws OutOfStockException {
+        Cart cart = new Cart();
+        Currency usd = Currency.getInstance("USD");
+        Product p1 = new Product("test1", "Samsung Galaxy S1", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        Product p2 = new Product("test2", "Samsung Galaxy S2", new BigDecimal(200), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        productDao.save(p1);
+        productDao.save(p2);
+
+        cartService.add(cart, p1.getId(), 5);
+        cartService.add(cart, p2.getId(), 10);
+
+        assertEquals(2, cart.getItems().size());
+
+        cartService.delete(cart, p1.getId());
+
+        assertEquals(1, cart.getItems().size());
     }
 }
 
