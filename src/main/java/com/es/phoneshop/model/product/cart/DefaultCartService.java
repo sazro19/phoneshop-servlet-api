@@ -47,12 +47,12 @@ public class DefaultCartService implements CartService {
         lock.writeLock().lock();
         try {
             Product product = productDao.getProduct(productId);
-            if (isStockNotAvailable(product, quantity)) {
-                throw new OutOfStockException(product, quantity, product.getStock());
-            }
             Optional<CartItem> containedCartItem = getCartItemByProductId(cart, productId);
             if (containedCartItem.isPresent()) {
                 int oldQuantity = containedCartItem.get().getQuantity();
+                if (isStockNotAvailable(product, quantity)) {
+                    throw new OutOfStockException(product, quantity, product.getStock() - oldQuantity);
+                }
                 int newQuantity = oldQuantity + quantity;
                 if (isStockNotAvailable(product, newQuantity)) {
                     throw new OutOfStockException(product, newQuantity, product.getStock() - oldQuantity);
@@ -60,6 +60,9 @@ public class DefaultCartService implements CartService {
                 containedCartItem.get().setQuantity(newQuantity);
                 updateTotalQuantityAndPrice(cart);
                 return;
+            }
+            if (isStockNotAvailable(product, quantity)) {
+                throw new OutOfStockException(product, quantity, product.getStock());
             }
             CartItem cartItem = new CartItem(product, quantity);
             cart.getItems().add(cartItem);
