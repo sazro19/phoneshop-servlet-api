@@ -1,5 +1,9 @@
 package com.es.phoneshop.web;
 
+import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.cart.Cart;
+import com.es.phoneshop.model.product.cart.CartService;
+import com.es.phoneshop.model.product.cart.exception.OutOfStockException;
 import com.es.phoneshop.model.product.viewed.RecentlyViewedContainer;
 import com.es.phoneshop.model.product.viewed.RecentlyViewedService;
 import org.junit.Before;
@@ -14,10 +18,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Locale;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProductListPageServletTest {
@@ -31,6 +35,8 @@ public class ProductListPageServletTest {
     private ServletConfig config;
     @Mock
     private RecentlyViewedService service;
+    @Mock
+    private CartService cartService;
 
     private ProductListPageServlet servlet = new ProductListPageServlet();
 
@@ -38,8 +44,12 @@ public class ProductListPageServletTest {
     public void setup() throws ServletException {
         servlet.init(config);
         servlet.setRecentlyViewedService(service);
+        servlet.setCartService(cartService);
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
         when(service.getContainer(request.getSession())).thenReturn(new RecentlyViewedContainer());
+        when(request.getPathInfo()).thenReturn("\\1");
+        when(request.getLocale()).thenReturn(new Locale("en_US"));
+        when(cartService.getCart(request.getSession())).thenReturn(new Cart());
     }
 
     @Test
@@ -49,5 +59,39 @@ public class ProductListPageServletTest {
         verify(requestDispatcher).forward(request, response);
         verify(request).setAttribute(eq("products"), any());
         verify(request).setAttribute(eq("viewed"), any());
+    }
+
+    @Test
+    public void testDoPost() throws ServletException, IOException {
+        when(request.getParameterValues("quantity")).thenReturn(new String[]{"1"});
+        when(request.getParameterValues("productId")).thenReturn(new String[]{"1"});
+        when(request.getParameter("query")).thenReturn("Samsung");
+        when(request.getParameter("sort")).thenReturn("PRICE");
+        when(request.getParameter("order")).thenReturn("ASC");
+        servlet.doPost(request, response);
+
+        verify(response).sendRedirect(request.getContextPath() + "/products?message=Product added to cart" +
+                "&query=Samsung" +
+                "&sort=PRICE" +
+                "&order=ASC");
+    }
+
+    @Test
+    public void testDoPostWithParseException() throws ServletException, IOException {
+        when(request.getParameterValues("quantity")).thenReturn(new String[]{"e"});
+        when(request.getParameterValues("productId")).thenReturn(new String[]{"1"});
+        servlet.doPost(request, response);
+
+        verify(request).setAttribute(eq("error"), eq("Not a number"));
+    }
+
+    @Test
+    public void testDoPostWithOutOfStockException() throws ServletException, IOException, OutOfStockException {
+        when(request.getParameterValues("quantity")).thenReturn(new String[]{"1"});
+        when(request.getParameterValues("productId")).thenReturn(new String[]{"1"});
+        doThrow(new OutOfStockException(new Product(), 1, 3)).when(cartService).add(any(), anyLong(), anyInt());
+        servlet.doPost(request,response);
+
+        verify(request).setAttribute(eq("error"), any());
     }
 }
