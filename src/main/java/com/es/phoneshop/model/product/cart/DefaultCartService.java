@@ -123,13 +123,9 @@ public class DefaultCartService implements CartService {
                 .mapToInt(CartItem::getQuantity)
                 .sum());
         cart.setTotalPrice(cart.getItems().stream()
-                .map(this::calcTotalPriceInCardItem)
+                .map(cartItem -> cartItem.getProduct().getPrice()
+                        .multiply(BigDecimal.valueOf(cartItem.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
-    }
-
-    private BigDecimal calcTotalPriceInCardItem(CartItem cartItem) {
-        return cartItem.getProduct().getPrice()
-                .multiply(BigDecimal.valueOf(cartItem.getQuantity()));
     }
 
     private boolean isStockNotAvailable(Product product, int newQuantity) {

@@ -6,8 +6,7 @@
 <jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
 <tags:master pageTitle="Product">
   <p>
-    Cart: ${cart}
-  <br>
+ad  <br>
     ${product.description}
     <br><img src="${product.imageUrl}">
   </p>

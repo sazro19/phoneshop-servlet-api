@@ -5,9 +5,7 @@
 
 <jsp:useBean id="cart" type="com.es.phoneshop.model.product.cart.Cart" scope="request"/>
 <tags:master pageTitle="Cart">
-  <p>
-    Cart: ${cart}
-  </p>
+  <c:if test="${not empty cart.items}">
   <c:if test="${not empty param.message and empty error}">
     <span class="success">
         ${param.message}
@@ -87,4 +85,10 @@
     </p>
   </form>
   <form id="deleteCartItem" method="post"></form>
+  </c:if>
+  <c:if test="${empty cart.items}">
+    <h2>
+      Cart is empty
+    </h2>
+  </c:if>
 </tags:master>
