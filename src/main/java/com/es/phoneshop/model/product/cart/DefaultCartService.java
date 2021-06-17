@@ -46,6 +46,9 @@ public class DefaultCartService implements CartService {
     public void add(Cart cart, Long productId, int quantity) throws OutOfStockException {
         lock.writeLock().lock();
         try {
+            if (quantity <= 0) {
+                throw new IllegalArgumentException("Invalid quantity");
+            }
             Product product = productDao.getProduct(productId);
             Optional<CartItem> containedCartItem = getCartItemByProductId(cart, productId);
             if (containedCartItem.isPresent()) {
@@ -76,6 +79,9 @@ public class DefaultCartService implements CartService {
     public void update(Cart cart, Long productId, int quantity) throws OutOfStockException {
         lock.writeLock().lock();
         try {
+            if (quantity <= 0) {
+                throw new IllegalArgumentException("Invalid quantity");
+            }
             Product product = productDao.getProduct(productId);
             if (isStockNotAvailable(product, quantity)) {
                 throw new OutOfStockException(product, quantity, product.getStock());
@@ -109,7 +115,7 @@ public class DefaultCartService implements CartService {
     private Optional<CartItem> getCartItemByProductId(Cart cart, Long productId) {
         return cart.getItems().stream()
                 .filter(cartItem -> cartItem.getProduct().getId().equals(productId))
-                .findFirst();
+                .findAny();
     }
 
     private void updateTotalQuantityAndPrice(Cart cart) {

@@ -47,11 +47,14 @@ public class CartPageServlet extends HttpServlet {
                 NumberFormat format = NumberFormat.getInstance(request.getLocale());
                 quantity = format.parse(quantities[i]).intValue();
                 cartService.update(cartService.getCart(request.getSession()), productId, quantity);
-            } catch (ParseException | OutOfStockException e) {
+            } catch (ParseException | OutOfStockException | IllegalArgumentException e) {
                 if (e.getClass().equals(ParseException.class)) {
                     errors.put(productId, "Not a number");
-                } else {
+                }
+                if (e.getClass().equals(OutOfStockException.class)) {
                     errors.put(productId, "Out of stock, available " + ((OutOfStockException) e).getStockAvailable());
+                } else {
+                    errors.put(productId, e.getMessage());
                 }
             }
         }

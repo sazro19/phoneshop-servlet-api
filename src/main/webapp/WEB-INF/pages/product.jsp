@@ -48,7 +48,7 @@
             ${product.stock}
           </th>
           <th>
-              <input name="quantity" value="${not empty error ? param.quantity : 1}">
+              <input type="number" min="1" name="quantity" value="${not empty error ? param.quantity : 1}">
               <c:if test="${not empty error}">
                 <span class="error">
                   '${param.quantity}': ${error}

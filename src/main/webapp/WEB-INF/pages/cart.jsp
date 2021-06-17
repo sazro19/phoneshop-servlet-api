@@ -53,7 +53,7 @@
           <td>
             <fmt:formatNumber value="${item.quantity}" var="quantity"/>
               <c:set var="error" value="${errors[item.product.id]}"/>
-              <input name="quantity" value="${not empty error ? paramValues['quantity'][status.index] : item.quantity}" class="quantity">
+              <input type="number" min="1" name="quantity" value="${not empty error ? paramValues['quantity'][status.index] : item.quantity}" class="quantity">
             <c:if test="${not empty error}">
                 <span class="error">
                   ${errors[item.product.id]}
