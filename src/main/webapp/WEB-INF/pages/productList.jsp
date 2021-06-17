@@ -54,7 +54,7 @@
           </a>
         </td>
         <td>
-          <input name="quantity" value="${not empty error and product.id eq index ? input : 1}">
+          <input type="number" min="1" name="quantity" value="${not empty error and product.id eq index ? input : 1}">
           <c:if test="${not empty error and product.id eq index}">
                 <span class="error">
                   ${error}

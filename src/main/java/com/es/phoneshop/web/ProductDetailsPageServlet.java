@@ -69,8 +69,13 @@ public class ProductDetailsPageServlet extends HttpServlet {
         try {
             Cart cart = cartService.getCart(request.getSession());
             cartService.add(cart, productId, quantity);
-        } catch (OutOfStockException e) {
-            request.setAttribute(ERROR_ATTRIBUTE, "Out of stock, available " + e.getStockAvailable());
+        } catch (OutOfStockException | IllegalArgumentException e) {
+            if (e.getClass().equals(OutOfStockException.class)) {
+                request.setAttribute(ERROR_ATTRIBUTE, "Out of stock, available " +
+                        ((OutOfStockException) e).getStockAvailable());
+            } else {
+                request.setAttribute(ERROR_ATTRIBUTE, e.getMessage());
+            }
             doGet(request, response);
             return;
         }
