@@ -6,7 +6,7 @@
 <jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
 <tags:master pageTitle="Product">
   <p>
-ad  <br>
+  <br>
     ${product.description}
     <br><img src="${product.imageUrl}">
   </p>
@@ -60,8 +60,5 @@ ad  <br>
       <button>Add to cart</button>
     </p>
   </form>
-  <p>
-    <b>Recently viewed</b>
-  </p>
   <tags:recentlyViewed recentlyViewedList="${viewed}"/>
 </tags:master>

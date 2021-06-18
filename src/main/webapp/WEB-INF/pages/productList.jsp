@@ -76,8 +76,5 @@
     </c:forEach>
   </table>
   </form>
-  <p>
-    <b>Recently viewed</b>
-  </p>
   <tags:recentlyViewed recentlyViewedList="${viewed}"/>
 </tags:master>
