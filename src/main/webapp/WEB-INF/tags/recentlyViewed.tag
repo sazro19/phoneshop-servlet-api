@@ -3,6 +3,11 @@
 <%@ tag trimDirectiveWhitespaces="true" %>
 <%@ attribute name="recentlyViewedList" rtexprvalue="true" type="java.util.Deque" required="true" %>
 
+<c:if test="${not empty recentlyViewedList}">
+    <p>
+        <b>Recently viewed</b>
+    </p>
+</c:if>
 <table>
     <c:forEach var="product" items="${recentlyViewedList}">
         <th>
