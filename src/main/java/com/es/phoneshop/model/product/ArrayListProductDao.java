@@ -6,13 +6,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ArrayListProductDao implements ProductDao {
+public class ArrayListProductDao extends GenericDao<Product> implements ProductDao {
     private static ProductDao instance;
 
     public static synchronized ProductDao getInstance() {
@@ -22,38 +20,8 @@ public class ArrayListProductDao implements ProductDao {
         return instance;
     }
 
-    private List<Product> productList;
-
-    private long newId;
-
-    private static final ReentrantReadWriteLock lock;
-
-    private static final Logger LOGGER;
-
-    static {
-        lock = new ReentrantReadWriteLock(true);
-        LOGGER = Logger.getLogger(ArrayListProductDao.class.getName());
-    }
-
     private ArrayListProductDao() {
-        this.productList = new ArrayList<>();
-    }
-
-    @Override
-    public Product getProduct(Long id) throws ProductNotFoundException {
-        lock.readLock().lock();
-        try {
-            if (id == null) {
-                LOGGER.log(Level.WARNING, "getProduct(Long id) has got null id");
-                throw new ProductNotFoundException(id);
-            }
-            return productList.stream()
-                    .filter(product -> id.equals(product.getId()))
-                    .findAny()
-                    .orElseThrow(() -> new ProductNotFoundException(id));
-        } finally {
-            lock.readLock().unlock();
-        }
+        this.itemList = new ArrayList<>();
     }
 
     @Override
@@ -70,7 +38,7 @@ public class ArrayListProductDao implements ProductDao {
                 comparator = comparator.reversed();
             }
 
-            List<Product> result = productList.stream()
+            List<Product> result = itemList.stream()
                     .filter(this::isProductNotNull)
                     .filter(this::isPriceNotNull)
                     .filter(this::isProductInStock)
@@ -102,7 +70,7 @@ public class ArrayListProductDao implements ProductDao {
     public List<Product> findProducts(String query) {
         lock.readLock().lock();
         try {
-            List<Product> result = productList.stream()
+            List<Product> result = itemList.stream()
                     .filter(this::isProductNotNull)
                     .filter(this::isPriceNotNull)
                     .filter(this::isProductInStock)
@@ -128,7 +96,7 @@ public class ArrayListProductDao implements ProductDao {
     public List<Product> findProducts() {
         lock.readLock().lock();
         try {
-            return productList.stream()
+            return itemList.stream()
                     .filter(this::isProductNotNull)
                     .filter(this::isPriceNotNull)
                     .filter(this::isProductInStock)
@@ -144,14 +112,14 @@ public class ArrayListProductDao implements ProductDao {
         try {
             if (product.getId() != null) {
                 List<PriceHistory> oldPrices = new ArrayList<>();
-                if (productList.removeIf(p -> isProductForDeleting(product, p, oldPrices))) {
+                if (itemList.removeIf(p -> isProductForDeleting(product, p, oldPrices))) {
                     product.getPriceHistoryList().addAll(oldPrices);
                 }
-                productList.add(product);
+                itemList.add(product);
                 return;
             }
             product.setId(++newId);
-            productList.add(product);
+            itemList.add(product);
         } finally {
             lock.writeLock().unlock();
         }
@@ -165,7 +133,7 @@ public class ArrayListProductDao implements ProductDao {
                 LOGGER.log(Level.WARNING, "delete(Long id) has got null id");
                 throw new ProductNotFoundException(id);
             }
-            if (!productList.removeIf(product -> id.equals(product.getId()))) {
+            if (!itemList.removeIf(product -> id.equals(product.getId()))) {
                 throw new ProductNotFoundException(id);
             } else {
                 newId--;

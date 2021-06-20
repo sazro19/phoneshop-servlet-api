@@ -53,7 +53,7 @@ public class ProductDetailsPageServletTest {
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
         when(request.getPathInfo()).thenReturn("\\1");
         when(request.getLocale()).thenReturn(new Locale("en_US"));
-        when(productDao.getProduct(any())).thenReturn(new Product());
+        when(productDao.getItem(any())).thenReturn(new Product());
         when(cartService.getCart(request.getSession())).thenReturn(new Cart());
         when(recentlyViewedService.getContainer(request.getSession())).thenReturn(new RecentlyViewedContainer());
     }

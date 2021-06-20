@@ -45,7 +45,7 @@ public class DefaultRecentlyViewedService implements RecentlyViewedService{
     public void add(RecentlyViewedContainer container, Long productId) {
         lock.writeLock().lock();
         try {
-            Product product = productDao.getProduct(productId);
+            Product product = productDao.getItem(productId);
             container.addProduct(product);
         } finally {
             lock.writeLock().unlock();

@@ -49,7 +49,7 @@ public class DefaultCartService implements CartService {
             if (quantity <= 0) {
                 throw new IllegalArgumentException("Invalid quantity");
             }
-            Product product = productDao.getProduct(productId);
+            Product product = productDao.getItem(productId);
             Optional<CartItem> containedCartItem = getCartItemByProductId(cart, productId);
             if (containedCartItem.isPresent()) {
                 int oldQuantity = containedCartItem.get().getQuantity();
@@ -82,7 +82,7 @@ public class DefaultCartService implements CartService {
             if (quantity <= 0) {
                 throw new IllegalArgumentException("Invalid quantity");
             }
-            Product product = productDao.getProduct(productId);
+            Product product = productDao.getItem(productId);
             if (isStockNotAvailable(product, quantity)) {
                 throw new OutOfStockException(product, quantity, product.getStock());
             }

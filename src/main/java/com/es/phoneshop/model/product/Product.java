@@ -7,7 +7,7 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Objects;
 
-public class Product implements Serializable {
+public class Product implements Serializable, BaseItem {
     private Long id;
     private String code;
     private String description;
