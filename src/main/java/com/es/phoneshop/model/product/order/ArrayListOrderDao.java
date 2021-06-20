@@ -1,6 +1,7 @@
 package com.es.phoneshop.model.product.order;
 
 import com.es.phoneshop.model.product.GenericDao;
+import com.es.phoneshop.model.product.exception.ItemNotFoundException;
 import com.es.phoneshop.model.product.exception.OrderNotFoundException;
 
 import java.util.ArrayList;
@@ -17,6 +18,23 @@ public class ArrayListOrderDao extends GenericDao<Order> implements OrderDao {
             instance = new ArrayListOrderDao();
         }
         return instance;
+    }
+
+    @Override
+    public Order getItemBySecureOrderId(String secureOrderId) {
+        lock.readLock().lock();
+        try {
+            if (secureOrderId == null) {
+                LOGGER.log(Level.WARNING, "getItemBySecureOrderId(String secureOrderId) has got null id");
+                throw new OrderNotFoundException();
+            }
+            return itemList.stream()
+                    .filter(item -> secureOrderId.equals(item.getSecureId()))
+                    .findAny()
+                    .orElseThrow(() -> new OrderNotFoundException(secureOrderId));
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     private ArrayListOrderDao() {

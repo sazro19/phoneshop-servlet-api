@@ -9,6 +9,7 @@ import java.util.Objects;
 
 public class Order extends Cart implements BaseItem {
     private Long id;
+    private String secureId;
 
     private BigDecimal subtotal;
     private BigDecimal deliveryCost;
@@ -90,6 +91,14 @@ public class Order extends Cart implements BaseItem {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getSecureId() {
+        return secureId;
+    }
+
+    public void setSecureId(String secureId) {
+        this.secureId = secureId;
     }
 
     @Override
