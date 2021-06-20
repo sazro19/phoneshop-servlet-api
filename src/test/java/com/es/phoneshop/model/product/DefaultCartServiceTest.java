@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.Currency;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class DefaultCartServiceTest {
     private ProductDao productDao;

@@ -40,7 +40,7 @@ public class ProductPriceHistoryPageServletTest {
         servlet.setProductDao(productDao);
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
         when(request.getPathInfo()).thenReturn("\\1");
-        when(productDao.getProduct(any())).thenReturn(new Product());
+        when(productDao.getItem(any())).thenReturn(new Product());
     }
 
     @Test

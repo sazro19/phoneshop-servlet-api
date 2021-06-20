@@ -1,13 +1,17 @@
 package com.es.phoneshop.model.product;
 
 import com.es.phoneshop.data.DataGenerator;
+import com.es.phoneshop.model.product.exception.ItemNotFoundException;
 import com.es.phoneshop.model.product.exception.ProductNotFoundException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Currency;
+import java.util.List;
+import java.util.Objects;
 
 import static org.junit.Assert.*;
 
@@ -46,7 +50,7 @@ public class ArrayListProductDaoTest {
 
         assertTrue(product.getId() > 0);
 
-        Product check = productDao.getProduct(product.getId());
+        Product check = productDao.getItem(product.getId());
 
         assertNotNull(check);
         assertEquals("sgs", check.getCode());
@@ -62,7 +66,7 @@ public class ArrayListProductDaoTest {
         update.setPrice(new BigDecimal(150));
         productDao.save(update);
 
-        Product check = productDao.getProduct(update.getId());
+        Product check = productDao.getItem(update.getId());
 
         assertEquals(new BigDecimal(150), check.getPrice());
     }
@@ -112,10 +116,10 @@ public class ArrayListProductDaoTest {
         Product product = new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
 
-        assertEquals(product.getId(), productDao.getProduct(product.getId()).getId());
+        assertEquals(product.getId(), productDao.getItem(product.getId()).getId());
     }
 
-    @Test(expected = ProductNotFoundException.class)
+    @Test(expected = ItemNotFoundException.class)
     public void testGetNonExistentProduct() throws ProductNotFoundException {
         Currency usd = Currency.getInstance("USD");
         Product product = new Product("nonExistent", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
@@ -123,7 +127,7 @@ public class ArrayListProductDaoTest {
 
         productDao.delete(product.getId());
 
-        productDao.getProduct(product.getId());
+        productDao.getItem(product.getId());
     }
 
     @Test
@@ -138,9 +142,9 @@ public class ArrayListProductDaoTest {
 
         String query = "Huawei X";
 
-        List<Product> expected = Arrays.asList(productDao.getProduct(p2.getId()),
-                productDao.getProduct(p3.getId()),
-                productDao.getProduct(p1.getId()));
+        List<Product> expected = Arrays.asList(productDao.getItem(p2.getId()),
+                productDao.getItem(p3.getId()),
+                productDao.getItem(p1.getId()));
 
         assertEquals(expected, productDao.findProducts(query));
     }
@@ -157,9 +161,9 @@ public class ArrayListProductDaoTest {
 
         String query = "Huawei X 1";
 
-        List<Product> expected = Arrays.asList(productDao.getProduct(p1.getId()),
-                productDao.getProduct(p2.getId()),
-                productDao.getProduct(p3.getId()));
+        List<Product> expected = Arrays.asList(productDao.getItem(p1.getId()),
+                productDao.getItem(p2.getId()),
+                productDao.getItem(p3.getId()));
 
         assertEquals(expected, productDao.findProducts(query, SortField.DESCRIPTION, SortOrder.ASC));
     }
@@ -176,9 +180,9 @@ public class ArrayListProductDaoTest {
 
         String query = "Huawei X 1";
 
-        List<Product> expected = Arrays.asList(productDao.getProduct(p3.getId()),
-                productDao.getProduct(p2.getId()),
-                productDao.getProduct(p1.getId()));
+        List<Product> expected = Arrays.asList(productDao.getItem(p3.getId()),
+                productDao.getItem(p2.getId()),
+                productDao.getItem(p1.getId()));
 
         assertEquals(expected, productDao.findProducts(query, SortField.DESCRIPTION, SortOrder.DESC));
     }
@@ -195,9 +199,9 @@ public class ArrayListProductDaoTest {
 
         String query = "Huawei X 1";
 
-        List<Product> expected = Arrays.asList(productDao.getProduct(p1.getId()),
-                productDao.getProduct(p2.getId()),
-                productDao.getProduct(p3.getId()));
+        List<Product> expected = Arrays.asList(productDao.getItem(p1.getId()),
+                productDao.getItem(p2.getId()),
+                productDao.getItem(p3.getId()));
 
         assertEquals(expected, productDao.findProducts(query, SortField.PRICE, SortOrder.ASC));
     }
@@ -214,9 +218,9 @@ public class ArrayListProductDaoTest {
 
         String query = "Huawei X 1";
 
-        List<Product> expected = Arrays.asList(productDao.getProduct(p1.getId()),
-                productDao.getProduct(p2.getId()),
-                productDao.getProduct(p3.getId()));
+        List<Product> expected = Arrays.asList(productDao.getItem(p1.getId()),
+                productDao.getItem(p2.getId()),
+                productDao.getItem(p3.getId()));
 
         assertEquals(expected, productDao.findProducts(query, SortField.PRICE, SortOrder.DESC));
     }
@@ -230,8 +234,8 @@ public class ArrayListProductDaoTest {
         Product updated = new Product(p.getId(),"p1", "Huawei", new BigDecimal(350), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(updated);
 
-        assertEquals(new BigDecimal(350), productDao.getProduct(updated.getId()).getPriceHistoryList().get(0).getPrice());
-        assertEquals(new BigDecimal(300), productDao.getProduct(updated.getId()).getPriceHistoryList().get(1).getPrice());
+        assertEquals(new BigDecimal(350), productDao.getItem(updated.getId()).getPriceHistoryList().get(0).getPrice());
+        assertEquals(new BigDecimal(300), productDao.getItem(updated.getId()).getPriceHistoryList().get(1).getPrice());
     }
 
     @Test
@@ -243,7 +247,7 @@ public class ArrayListProductDaoTest {
         Product updated = new Product(p.getId(),"p1", "Huawei", new BigDecimal(300), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(updated);
 
-        assertEquals(1, productDao.getProduct(updated.getId()).getPriceHistoryList().size());
+        assertEquals(1, productDao.getItem(updated.getId()).getPriceHistoryList().size());
     }
 }
 

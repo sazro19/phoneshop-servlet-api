@@ -44,7 +44,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
 
         RecentlyViewedContainer container = recentlyViewedService.getContainer(request.getSession());
 
-        request.setAttribute("product", productDao.getProduct(productId));
+        request.setAttribute("product", productDao.getItem(productId));
         request.setAttribute("cart", cartService.getCart(request.getSession()));
         request.setAttribute("viewed", recentlyViewedService.getThreeRecentlyViewedProducts(container));
 
