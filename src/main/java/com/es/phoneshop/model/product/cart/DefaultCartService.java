@@ -112,6 +112,17 @@ public class DefaultCartService implements CartService {
         }
     }
 
+    @Override
+    public void clearCart(Cart cart) {
+        lock.writeLock().lock();
+        try {
+            cart.getItems().clear();
+            cart.setTotalQuantity(0);
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
     private Optional<CartItem> getCartItemByProductId(Cart cart, Long productId) {
         return cart.getItems().stream()
                 .filter(cartItem -> cartItem.getProduct().getId().equals(productId))

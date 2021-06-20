@@ -53,12 +53,12 @@ public class CheckoutPageServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         Cart cart = cartService.getCart(request.getSession());
-        Order order = orderService.getOrder(orderService.getOrder(cart));
+        Order order = orderService.getOrder(cart);
 
         Map<String, String> errors = new HashMap<>();
 
         setOrderFieldOrErrors(request, OrderDetailsAttributes.FIRSTNAME.getValue(), errors, order::setFirstname);
-        setOrderFieldOrErrors(request, OrderDetailsAttributes.LASTNAME.getValue(), errors, order::setFirstname);
+        setOrderFieldOrErrors(request, OrderDetailsAttributes.LASTNAME.getValue(), errors, order::setLastname);
 
         String phone = request.getParameter(OrderDetailsAttributes.PHONE.getValue());
         if (phone == null || phone.isEmpty()) {
@@ -81,7 +81,7 @@ public class CheckoutPageServlet extends HttpServlet {
             }
         }
 
-        setOrderFieldOrErrors(request, OrderDetailsAttributes.DELIVERY_ADDRESS.getValue(), errors, order::setFirstname);
+        setOrderFieldOrErrors(request, OrderDetailsAttributes.DELIVERY_ADDRESS.getValue(), errors, order::setDeliveryAddress);
 
         String paymentMethod = request.getParameter(OrderDetailsAttributes.PAYMENT_METHOD.getValue());
         if (paymentMethod == null || paymentMethod.isEmpty()) {
@@ -92,7 +92,8 @@ public class CheckoutPageServlet extends HttpServlet {
 
         if (errors.isEmpty()) {
             orderService.placeOrder(order);
-            response.sendRedirect(request.getContextPath() + "/overview/" + order.getId());
+            cartService.clearCart(cart);
+            response.sendRedirect(request.getContextPath() + "/order/overview/" + order.getSecureId());
         } else {
             request.setAttribute(ERRORS_ATTRIBUTE, errors);
             request.setAttribute(ORDER_ATTRIBUTE, order);
