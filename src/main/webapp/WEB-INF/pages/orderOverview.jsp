@@ -56,7 +56,6 @@
       </tr>
     </table>
     <h3>Details</h3>
-    <span style="color:red">*</span>-necessary field;
     <table>
       <tags:orderOverviewRow name="firstname" label="Firstname" order="${order}"/>
       <tags:orderOverviewRow name="lastname" label="Lasttname" order="${order}"/>
