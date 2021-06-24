@@ -58,14 +58,9 @@ public class DefaultOrderService implements OrderService {
 
     @Override
     public List<String> getStringPaymentMethods() {
-        lock.readLock().lock();
-        try {
-            return Arrays.stream(PaymentMethod.values())
-                    .map(PaymentMethod::getValue)
-                    .collect(Collectors.toList());
-        } finally {
-            lock.readLock().unlock();
-        }
+        return Arrays.stream(PaymentMethod.values())
+                .map(PaymentMethod::getValue)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -75,66 +70,36 @@ public class DefaultOrderService implements OrderService {
     }
 
     @Override
-    public void checkFirstname(Order order, String firstname, Map<String, String> errors) {
-        setOrderFieldOrErrors(firstname, OrderDetailsAttributes.getFIRSTNAME(), errors, order::setFirstname);
-    }
-
-    @Override
-    public void checkLastname(Order order, String lastname, Map<String, String> errors) {
-        setOrderFieldOrErrors(lastname, OrderDetailsAttributes.getLASTNAME(), errors, order::setLastname);
-    }
-
-    @Override
-    public void checkDeliveryAddress(Order order, String address, Map<String, String> errors) {
-        setOrderFieldOrErrors(address, OrderDetailsAttributes.getDeliveryAddress(), errors, order::setDeliveryAddress);
-    }
-
-    @Override
     public void checkDeliveryDate(Order order, String date, Map<String, String> errors) {
-        lock.writeLock().lock();
-        try {
-            if (date == null || date.isEmpty()) {
-                errors.put(OrderDetailsAttributes.getDeliveryDate(), "delivery date is required");
+        if (date == null || date.isEmpty()) {
+            errors.put(OrderDetailsAttributes.getDeliveryDate(), "delivery date is required");
+        } else {
+            LocalDate localDate = LocalDate.parse(date);
+            if (localDate.isBefore(LocalDate.now())) {
+                errors.put(OrderDetailsAttributes.getDeliveryDate(), "invalid delivery date");
             } else {
-                LocalDate localDate = LocalDate.parse(date);
-                if (localDate.isBefore(LocalDate.now())) {
-                    errors.put(OrderDetailsAttributes.getDeliveryDate(), "invalid delivery date");
-                } else {
-                    order.setDeliveryDate(localDate);
-                }
+                order.setDeliveryDate(localDate);
             }
-        } finally {
-            lock.writeLock().unlock();
         }
     }
 
     @Override
     public void checkPaymentMethod(Order order, String paymentMethod, Map<String, String> errors) {
-        lock.writeLock().lock();
-        try {
-            if (paymentMethod == null || paymentMethod.isEmpty()) {
-                errors.put(OrderDetailsAttributes.getPaymentMethod(), "payment method is required");
-            } else {
-                order.setPaymentMethod(PaymentMethod.getEnum(paymentMethod));
-            }
-        } finally {
-            lock.writeLock().unlock();
+        if (paymentMethod == null || paymentMethod.isEmpty()) {
+            errors.put(OrderDetailsAttributes.getPaymentMethod(), "payment method is required");
+        } else {
+            order.setPaymentMethod(PaymentMethod.getEnum(paymentMethod));
         }
     }
 
     @Override
     public void checkPhone(Order order, String phone, Map<String, String> errors) {
-        lock.writeLock().lock();
-        try {
-            if (phone == null || phone.isEmpty()) {
-                errors.put(OrderDetailsAttributes.getPHONE(), "phone is required");
-            } else if (!isPhoneCorrect(phone)) {
-                errors.put(OrderDetailsAttributes.getPHONE(), "invalid phone number");
-            } else {
-                order.setPhone(phone);
-            }
-        } finally {
-            lock.writeLock().unlock();
+        if (phone == null || phone.isEmpty()) {
+            errors.put(OrderDetailsAttributes.getPHONE(), "phone is required");
+        } else if (!isPhoneCorrect(phone)) {
+            errors.put(OrderDetailsAttributes.getPHONE(), "invalid phone number");
+        } else {
+            order.setPhone(phone);
         }
     }
 
@@ -149,17 +114,13 @@ public class DefaultOrderService implements OrderService {
                 phone.matches("[\\+]?\\d*(\\(\\d{3}\\))?\\d*\\-?\\d*\\-?\\d*\\d$");
     }
 
-    private void setOrderFieldOrErrors(String value, String field, Map<String, String> errors,
+    @Override
+    public void setOrderFieldOrErrors(String value, String field, Map<String, String> errors,
                                        Consumer<String> consumer) {
-        lock.writeLock().lock();
-        try {
-            if (value == null || value.isEmpty()) {
-                errors.put(field, field + " is required");
-            } else {
-                consumer.accept(value);
-            }
-        } finally {
-            lock.writeLock().unlock();
+        if (value == null || value.isEmpty()) {
+            errors.put(field, field + " is required");
+        } else {
+            consumer.accept(value);
         }
     }
 
