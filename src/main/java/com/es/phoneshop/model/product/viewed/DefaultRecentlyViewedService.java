@@ -61,4 +61,34 @@ public class DefaultRecentlyViewedService implements RecentlyViewedService{
             lock.readLock().unlock();
         }
     }
+
+    @Override
+    public Deque<Product> getOldThreeRecentlyViewedProducts(RecentlyViewedContainer container) {
+        lock.readLock().lock();
+        try {
+            return container.getOldThreeLstProducts();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public String getLastPage(RecentlyViewedContainer container) {
+        lock.readLock().lock();
+        try {
+            return container.getLastPage();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public void setLastPage(RecentlyViewedContainer container, String value) {
+        lock.writeLock().lock();
+        try {
+            container.setLastPage(value);
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
 }

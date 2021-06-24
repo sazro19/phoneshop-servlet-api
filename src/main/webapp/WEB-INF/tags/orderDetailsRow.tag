@@ -8,6 +8,7 @@
 <tr>
   <td>
     ${label}<span style="color:red">*</span>
+    <c:if test="${name eq 'phone'}">(example: +375297766551)</c:if>
   </td>
   <c:set var="error" value="${errors.get(name)}"/>
   <td>

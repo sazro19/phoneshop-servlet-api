@@ -61,16 +61,7 @@ public class CheckoutPageServletTest {
     public void testDoGetWithNullOrder() throws ServletException, IOException {
         servlet.doGet(request, response);
 
-        verify(response).sendRedirect(request.getContextPath() + "/products");
-    }
-
-    @Test
-    public void testDoPostWithErrors() throws ServletException, IOException {
-        when(orderService.getOrder(cartService.getCart(request.getSession()))).thenReturn(new Order());
-        servlet.doPost(request, response);
-
-        verify(request, atLeast(2)).setAttribute(eq("order"), any());
-        verify(request).setAttribute(eq("errors"), any());
+        verify(response).sendRedirect(request.getContextPath() + "/cart");
     }
 
     @Test
@@ -82,7 +73,6 @@ public class CheckoutPageServletTest {
         when(request.getParameter("deliveryDate")).thenReturn(String.valueOf(LocalDate.now().plusDays(1)));
         when(request.getParameter("paymentMethod")).thenReturn("Cache");
         when(orderService.getOrder(cartService.getCart(request.getSession()))).thenReturn(new Order());
-        when(orderService.isPhoneCorrect(anyString())).thenReturn(true);
         servlet.doPost(request, response);
 
         verify(response).sendRedirect(anyString());

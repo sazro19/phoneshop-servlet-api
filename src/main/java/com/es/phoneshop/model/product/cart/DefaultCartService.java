@@ -117,7 +117,7 @@ public class DefaultCartService implements CartService {
         lock.writeLock().lock();
         try {
             cart.getItems().clear();
-            cart.setTotalQuantity(0);
+            updateTotalQuantityAndPrice(cart);
         } finally {
             lock.writeLock().unlock();
         }

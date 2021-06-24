@@ -7,13 +7,21 @@ import java.util.*;
 public class RecentlyViewedContainer {
     private Deque<Product> threeLastProducts;
 
+    private Deque<Product> oldThreeLstProducts;
+
     private static final int MAX_RECENTLY_VIEWED = 3;
+
+    private Long lastVisitedProductId;
+
+    private String lastPage;
 
     public RecentlyViewedContainer() {
         this.threeLastProducts = new ArrayDeque<>();
+        this.oldThreeLstProducts = new ArrayDeque<>();
     }
 
     protected void addProduct(Product product) {
+        oldThreeLstProducts = getThreeLastProducts();
         if (threeLastProducts.contains(product)) {
             Product first = threeLastProducts.peek();
             if (first.equals(product)) {
@@ -40,5 +48,25 @@ public class RecentlyViewedContainer {
 
     protected Deque<Product> getThreeLastProducts() {
         return new ArrayDeque<>(threeLastProducts);
+    }
+
+    protected Deque<Product> getOldThreeLstProducts() {
+        return new ArrayDeque<>(oldThreeLstProducts);
+    }
+
+    protected Long getLastVisitedProductId() {
+        return this.lastVisitedProductId;
+    }
+
+    protected void setLastVisitedProductId(Long lastVisitedProductId) {
+        this.lastVisitedProductId = lastVisitedProductId;
+    }
+
+    protected String getLastPage() {
+        return lastPage;
+    }
+
+    protected void setLastPage(String lastPage) {
+        this.lastPage = lastPage;
     }
 }

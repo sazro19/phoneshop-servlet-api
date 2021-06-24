@@ -3,7 +3,9 @@ package com.es.phoneshop.web;
 import com.es.phoneshop.model.product.cart.Cart;
 import com.es.phoneshop.model.product.cart.CartService;
 import com.es.phoneshop.model.product.cart.DefaultCartService;
-import com.es.phoneshop.model.product.order.*;
+import com.es.phoneshop.model.product.order.DefaultOrderService;
+import com.es.phoneshop.model.product.order.Order;
+import com.es.phoneshop.model.product.order.OrderService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -11,10 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public class CheckoutPageServlet extends HttpServlet {
     private CartService cartService;
@@ -39,7 +39,7 @@ public class CheckoutPageServlet extends HttpServlet {
         Cart cart = cartService.getCart(request.getSession());
         Order order = orderService.getOrder(cart);
         if (order == null) {
-            response.sendRedirect(request.getContextPath() + "/products");
+            response.sendRedirect(request.getContextPath() + "/cart");
             return;
         }
         request.setAttribute(ORDER_ATTRIBUTE, orderService.getOrder(cart));
@@ -57,38 +57,17 @@ public class CheckoutPageServlet extends HttpServlet {
 
         Map<String, String> errors = new HashMap<>();
 
-        setOrderFieldOrErrors(request, OrderDetailsAttributes.FIRSTNAME.getValue(), errors, order::setFirstname);
-        setOrderFieldOrErrors(request, OrderDetailsAttributes.LASTNAME.getValue(), errors, order::setLastname);
+        orderService.checkFirstname(order, request.getParameter(OrderDetailsAttributes.getFIRSTNAME()), errors);
 
-        String phone = request.getParameter(OrderDetailsAttributes.PHONE.getValue());
-        if (phone == null || phone.isEmpty()) {
-            errors.put(OrderDetailsAttributes.PHONE.getValue(), "phone is required");
-        } else if (!orderService.isPhoneCorrect(phone)) {
-            errors.put(OrderDetailsAttributes.PHONE.getValue(), "invalid phone number");
-        } else {
-            order.setPhone(phone);
-        }
+        orderService.checkLastname(order, request.getParameter(OrderDetailsAttributes.getLASTNAME()), errors);
 
-        String stringDate = request.getParameter(OrderDetailsAttributes.DELIVERY_DATE.getValue());
-        if (stringDate == null || stringDate.isEmpty()) {
-            errors.put(OrderDetailsAttributes.DELIVERY_DATE.getValue(), "delivery date is required");
-        } else {
-            LocalDate date = LocalDate.parse(stringDate);
-            if (date.isBefore(LocalDate.now())) {
-                errors.put(OrderDetailsAttributes.DELIVERY_DATE.getValue(), "invalid delivery date");
-            } else {
-                order.setDeliveryDate(date);
-            }
-        }
+        orderService.checkPhone(order, request.getParameter(OrderDetailsAttributes.getPHONE()), errors);
 
-        setOrderFieldOrErrors(request, OrderDetailsAttributes.DELIVERY_ADDRESS.getValue(), errors, order::setDeliveryAddress);
+        orderService.checkDeliveryAddress(order, request.getParameter(OrderDetailsAttributes.getDeliveryAddress()), errors);
 
-        String paymentMethod = request.getParameter(OrderDetailsAttributes.PAYMENT_METHOD.getValue());
-        if (paymentMethod == null || paymentMethod.isEmpty()) {
-            errors.put(OrderDetailsAttributes.PAYMENT_METHOD.getValue(), "payment method is required");
-        } else {
-            order.setPaymentMethod(PaymentMethod.getEnum(paymentMethod));
-        }
+        orderService.checkDeliveryDate(order, request.getParameter(OrderDetailsAttributes.getDeliveryDate()), errors);
+
+        orderService.checkPaymentMethod(order, request.getParameter(OrderDetailsAttributes.getPaymentMethod()), errors);
 
         if (errors.isEmpty()) {
             orderService.placeOrder(order);
@@ -97,17 +76,8 @@ public class CheckoutPageServlet extends HttpServlet {
         } else {
             request.setAttribute(ERRORS_ATTRIBUTE, errors);
             request.setAttribute(ORDER_ATTRIBUTE, order);
-            doGet(request, response);
-        }
-    }
-
-    private void setOrderFieldOrErrors(HttpServletRequest request, String field, Map<String, String> errors,
-                                       Consumer<String> consumer) {
-        String attribute = request.getParameter(field);
-        if (attribute == null || attribute.isEmpty()) {
-            errors.put(field, field + " is required");
-        } else {
-            consumer.accept(attribute);
+            request.setAttribute(PAYMENT_METHODS_ATTRIBUTE, orderService.getStringPaymentMethods());
+            request.getRequestDispatcher("/WEB-INF/pages/checkout.jsp").forward(request, response);
         }
     }
 
