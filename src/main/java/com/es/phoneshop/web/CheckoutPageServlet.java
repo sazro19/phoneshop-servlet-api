@@ -57,13 +57,16 @@ public class CheckoutPageServlet extends HttpServlet {
 
         Map<String, String> errors = new HashMap<>();
 
-        orderService.checkFirstname(order, request.getParameter(OrderDetailsAttributes.getFIRSTNAME()), errors);
+        String firstname = request.getParameter(OrderDetailsAttributes.getFIRSTNAME());
+        orderService.setOrderFieldOrErrors(firstname, OrderDetailsAttributes.getFIRSTNAME(), errors, order::setFirstname);
 
-        orderService.checkLastname(order, request.getParameter(OrderDetailsAttributes.getLASTNAME()), errors);
+        String lastname = request.getParameter(OrderDetailsAttributes.getLASTNAME());
+        orderService.setOrderFieldOrErrors(lastname, OrderDetailsAttributes.getLASTNAME(), errors, order::setLastname);
+
+        String deliveryAddress = request.getParameter(OrderDetailsAttributes.getDeliveryAddress());
+        orderService.setOrderFieldOrErrors(deliveryAddress, OrderDetailsAttributes.getDeliveryAddress(), errors, order::setDeliveryAddress);
 
         orderService.checkPhone(order, request.getParameter(OrderDetailsAttributes.getPHONE()), errors);
-
-        orderService.checkDeliveryAddress(order, request.getParameter(OrderDetailsAttributes.getDeliveryAddress()), errors);
 
         orderService.checkDeliveryDate(order, request.getParameter(OrderDetailsAttributes.getDeliveryDate()), errors);
 

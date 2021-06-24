@@ -8,6 +8,9 @@ public class OrderDetailsAttributes {
     private static final String DELIVERY_ADDRESS = "deliveryAddress";
     private static final String PAYMENT_METHOD = "paymentMethod";
 
+    private OrderDetailsAttributes() {
+    }
+
     public static String getFIRSTNAME() {
         return FIRSTNAME;
     }
