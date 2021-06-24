@@ -6,6 +6,8 @@ import com.es.phoneshop.model.product.cart.Cart;
 import com.es.phoneshop.model.product.cart.CartService;
 import com.es.phoneshop.model.product.cart.DefaultCartService;
 import com.es.phoneshop.model.product.cart.exception.OutOfStockException;
+import com.es.phoneshop.model.product.exception.ItemNotFoundException;
+import com.es.phoneshop.model.product.exception.ProductNotFoundException;
 import com.es.phoneshop.model.product.viewed.DefaultRecentlyViewedService;
 import com.es.phoneshop.model.product.viewed.RecentlyViewedContainer;
 import com.es.phoneshop.model.product.viewed.RecentlyViewedService;
@@ -44,11 +46,29 @@ public class ProductDetailsPageServlet extends HttpServlet {
 
         RecentlyViewedContainer container = recentlyViewedService.getContainer(request.getSession());
 
-        request.setAttribute("product", productDao.getItem(productId));
-        request.setAttribute("cart", cartService.getCart(request.getSession()));
-        request.setAttribute("viewed", recentlyViewedService.getThreeRecentlyViewedProducts(container));
+        String lastPage = recentlyViewedService.getLastPage(container);
 
-        recentlyViewedService.add(container, productId);
+        try {
+            if (lastPage != null) {
+                if (lastPage.equals(request.getRequestURI())) {
+                    request.setAttribute("viewed", recentlyViewedService.getOldThreeRecentlyViewedProducts(container));
+                } else {
+                    request.setAttribute("viewed", recentlyViewedService.getThreeRecentlyViewedProducts(container));
+                    recentlyViewedService.add(container, productId);
+                }
+            } else {
+                request.setAttribute("viewed", recentlyViewedService.getThreeRecentlyViewedProducts(container));
+                recentlyViewedService.add(container, productId);
+            }
+            request.setAttribute("product", productDao.getItem(productId));
+        } catch (ItemNotFoundException e) {
+            e = new ProductNotFoundException(productId);
+            throw e;
+        }
+
+        recentlyViewedService.setLastPage(container, request.getRequestURI());
+
+        request.setAttribute("cart", cartService.getCart(request.getSession()));
 
         request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
     }
@@ -86,8 +106,12 @@ public class ProductDetailsPageServlet extends HttpServlet {
     }
 
     private Long parseProductId(HttpServletRequest request) {
-        String productInfo = request.getPathInfo().substring(1);
-        return Long.valueOf(productInfo);
+        try {
+            String productInfo = request.getPathInfo().substring(1);
+            return Long.valueOf(productInfo);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public void setProductDao(ProductDao productDao) {

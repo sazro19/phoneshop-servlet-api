@@ -1,10 +1,10 @@
 package com.es.phoneshop.model.product.order;
 
 public enum PaymentMethod {
-    CACHE("Cache"),
+    CASH("Cash"),
     CREDIT_CARD("Credit card");
 
-    private String value;
+    private final String value;
 
     PaymentMethod(String s) {
         value = s;
