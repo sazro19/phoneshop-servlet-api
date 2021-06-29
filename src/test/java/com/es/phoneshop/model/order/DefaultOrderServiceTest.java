@@ -1,8 +1,9 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.model.order;
 
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.cart.CartItem;
-import com.es.phoneshop.model.order.*;
+import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.web.OrderDetailsAttributes;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -62,12 +63,12 @@ public class DefaultOrderServiceTest {
         Order order = new Order();
         Map<String, String> errors = new HashMap<>();
 
-        orderService.checkFirstname(order, right, errors);
+        orderService.setOrderFieldOrErrors(right, OrderDetailsAttributes.getFIRSTNAME(), errors, order::setFirstname);
 
         assertTrue(errors.isEmpty());
         assertEquals(right, order.getFirstname());
 
-        orderService.checkFirstname(order, invalid, errors);
+        orderService.setOrderFieldOrErrors(invalid, OrderDetailsAttributes.getFIRSTNAME(), errors, order::setFirstname);
 
         assertFalse(errors.isEmpty());
     }
@@ -79,12 +80,12 @@ public class DefaultOrderServiceTest {
         Order order = new Order();
         Map<String, String> errors = new HashMap<>();
 
-        orderService.checkLastname(order, right, errors);
+        orderService.setOrderFieldOrErrors(right, OrderDetailsAttributes.getLASTNAME(), errors, order::setLastname);
 
         assertTrue(errors.isEmpty());
         assertEquals(right, order.getLastname());
 
-        orderService.checkLastname(order, invalid, errors);
+        orderService.setOrderFieldOrErrors(invalid, OrderDetailsAttributes.getLASTNAME(), errors, order::setLastname);
 
         assertFalse(errors.isEmpty());
     }
@@ -135,12 +136,12 @@ public class DefaultOrderServiceTest {
         Order order = new Order();
         Map<String, String> errors = new HashMap<>();
 
-        orderService.checkDeliveryAddress(order, right, errors);
+        orderService.setOrderFieldOrErrors(right, OrderDetailsAttributes.getDeliveryAddress(), errors, order::setDeliveryAddress);
 
         assertTrue(errors.isEmpty());
         assertEquals(right, order.getDeliveryAddress());
 
-        orderService.checkDeliveryAddress(order, invalid, errors);
+        orderService.setOrderFieldOrErrors(invalid, OrderDetailsAttributes.getDeliveryAddress(), errors, order::setDeliveryAddress);
 
         assertFalse(errors.isEmpty());
     }

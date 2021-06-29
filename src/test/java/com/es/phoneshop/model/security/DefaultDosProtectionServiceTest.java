@@ -1,7 +1,5 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.model.security;
 
-import com.es.phoneshop.model.security.DefaultDosProtectionService;
-import com.es.phoneshop.model.security.DosProtectionService;
 import org.junit.Before;
 import org.junit.Test;
 

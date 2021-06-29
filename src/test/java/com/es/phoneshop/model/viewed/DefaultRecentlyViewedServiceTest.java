@@ -1,16 +1,16 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.model.viewed;
 
-import com.es.phoneshop.model.viewed.DefaultRecentlyViewedService;
-import com.es.phoneshop.model.viewed.RecentlyViewedContainer;
-import com.es.phoneshop.model.viewed.RecentlyViewedService;
+import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.ProductDao;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Currency;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class DefaultRecentlyViewedServiceTest {
     private ProductDao productDao;
