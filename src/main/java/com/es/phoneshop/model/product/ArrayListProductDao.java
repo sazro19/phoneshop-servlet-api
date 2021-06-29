@@ -1,6 +1,10 @@
 package com.es.phoneshop.model.product;
 
-import com.es.phoneshop.model.product.exception.ProductNotFoundException;
+import com.es.phoneshop.model.GenericDao;
+import com.es.phoneshop.model.PriceHistory;
+import com.es.phoneshop.model.SortField;
+import com.es.phoneshop.model.SortOrder;
+import com.es.phoneshop.model.exception.ProductNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,8 +1,8 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.product.order.DefaultOrderService;
-import com.es.phoneshop.model.product.order.Order;
-import com.es.phoneshop.model.product.order.OrderService;
+import com.es.phoneshop.model.order.DefaultOrderService;
+import com.es.phoneshop.model.order.Order;
+import com.es.phoneshop.model.order.OrderService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

@@ -2,15 +2,15 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.ProductDao;
-import com.es.phoneshop.model.product.cart.Cart;
-import com.es.phoneshop.model.product.cart.CartService;
-import com.es.phoneshop.model.product.cart.DefaultCartService;
-import com.es.phoneshop.model.product.cart.exception.OutOfStockException;
-import com.es.phoneshop.model.product.exception.ItemNotFoundException;
-import com.es.phoneshop.model.product.exception.ProductNotFoundException;
-import com.es.phoneshop.model.product.viewed.DefaultRecentlyViewedService;
-import com.es.phoneshop.model.product.viewed.RecentlyViewedContainer;
-import com.es.phoneshop.model.product.viewed.RecentlyViewedService;
+import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.model.cart.CartService;
+import com.es.phoneshop.model.cart.DefaultCartService;
+import com.es.phoneshop.model.cart.exception.OutOfStockException;
+import com.es.phoneshop.model.exception.ItemNotFoundException;
+import com.es.phoneshop.model.exception.ProductNotFoundException;
+import com.es.phoneshop.model.viewed.DefaultRecentlyViewedService;
+import com.es.phoneshop.model.viewed.RecentlyViewedContainer;
+import com.es.phoneshop.model.viewed.RecentlyViewedService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

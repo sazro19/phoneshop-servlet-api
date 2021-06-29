@@ -1,8 +1,8 @@
 package com.es.phoneshop.model.product;
 
-import com.es.phoneshop.model.product.order.ArrayListOrderDao;
-import com.es.phoneshop.model.product.order.Order;
-import com.es.phoneshop.model.product.order.OrderDao;
+import com.es.phoneshop.model.order.ArrayListOrderDao;
+import com.es.phoneshop.model.order.Order;
+import com.es.phoneshop.model.order.OrderDao;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -107,12 +107,12 @@
 
   <error-page>
     <location>/WEB-INF/pages/productNotFound.jsp</location>
-    <exception-type>com.es.phoneshop.model.product.exception.ProductNotFoundException</exception-type>
+    <exception-type>com.es.phoneshop.model.exception.ProductNotFoundException</exception-type>
   </error-page>
 
   <error-page>
     <location>/WEB-INF/pages/orderNotFound.jsp</location>
-    <exception-type>com.es.phoneshop.model.product.exception.OrderNotFoundException</exception-type>
+    <exception-type>com.es.phoneshop.model.exception.OrderNotFoundException</exception-type>
   </error-page>
 
   <error-page>

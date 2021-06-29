@@ -1,5 +1,8 @@
 package com.es.phoneshop.model.product;
 
+import com.es.phoneshop.model.BaseItem;
+import com.es.phoneshop.model.PriceHistory;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;

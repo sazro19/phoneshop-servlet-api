@@ -1,8 +1,8 @@
 package com.es.phoneshop.model.product;
 
-import com.es.phoneshop.model.product.cart.Cart;
-import com.es.phoneshop.model.product.cart.CartItem;
-import com.es.phoneshop.model.product.order.*;
+import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.model.cart.CartItem;
+import com.es.phoneshop.model.order.*;
 import org.junit.Before;
 import org.junit.Test;
 

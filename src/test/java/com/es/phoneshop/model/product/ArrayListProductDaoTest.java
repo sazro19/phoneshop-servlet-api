@@ -1,8 +1,10 @@
 package com.es.phoneshop.model.product;
 
 import com.es.phoneshop.data.DataGenerator;
-import com.es.phoneshop.model.product.exception.ItemNotFoundException;
-import com.es.phoneshop.model.product.exception.ProductNotFoundException;
+import com.es.phoneshop.model.SortField;
+import com.es.phoneshop.model.SortOrder;
+import com.es.phoneshop.model.exception.ItemNotFoundException;
+import com.es.phoneshop.model.exception.ProductNotFoundException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

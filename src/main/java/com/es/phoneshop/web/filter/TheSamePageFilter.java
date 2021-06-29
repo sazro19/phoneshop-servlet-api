@@ -1,8 +1,8 @@
 package com.es.phoneshop.web.filter;
 
-import com.es.phoneshop.model.product.viewed.DefaultRecentlyViewedService;
-import com.es.phoneshop.model.product.viewed.RecentlyViewedContainer;
-import com.es.phoneshop.model.product.viewed.RecentlyViewedService;
+import com.es.phoneshop.model.viewed.DefaultRecentlyViewedService;
+import com.es.phoneshop.model.viewed.RecentlyViewedContainer;
+import com.es.phoneshop.model.viewed.RecentlyViewedService;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
