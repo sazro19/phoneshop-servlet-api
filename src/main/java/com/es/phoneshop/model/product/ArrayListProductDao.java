@@ -71,32 +71,6 @@ public class ArrayListProductDao extends GenericDao<Product> implements ProductD
     }
 
     @Override
-    public List<Product> findProducts(String query) {
-        lock.readLock().lock();
-        try {
-            List<Product> result = itemList.stream()
-                    .filter(this::isProductNotNull)
-                    .filter(this::isPriceNotNull)
-                    .filter(this::isProductInStock)
-                    .filter(p -> isProductMatchesAnyQuery(p, query))
-                    .sorted((p1, p2) -> {
-                        long secondOcc = countOccurrence(p2, query);
-                        long firstOcc = countOccurrence(p1, query);
-                        if (secondOcc == firstOcc) {
-                            return Double.compare(calcOccurrencesWithDescription(p2, secondOcc),
-                                    calcOccurrencesWithDescription(p1, firstOcc));
-                        } else {
-                            return Long.compare(secondOcc, firstOcc);
-                        }
-                    })
-                    .collect(Collectors.toList());
-            return result;
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-
-    @Override
     public List<Product> findProducts() {
         lock.readLock().lock();
         try {

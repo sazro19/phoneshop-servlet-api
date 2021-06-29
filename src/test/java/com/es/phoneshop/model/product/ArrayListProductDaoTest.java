@@ -148,7 +148,7 @@ public class ArrayListProductDaoTest {
                 productDao.getItem(p3.getId()),
                 productDao.getItem(p1.getId()));
 
-        assertEquals(expected, productDao.findProducts(query));
+        assertEquals(expected, productDao.findProducts(query, null, null));
     }
 
     @Test
