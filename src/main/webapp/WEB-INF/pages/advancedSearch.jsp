@@ -3,6 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<jsp:useBean id="products" type="java.util.ArrayList" scope="request"/>
 <tags:master pageTitle="Advanced search">
   <h1>Advanced search</h1>
   <form>
@@ -16,12 +17,11 @@
         </td>
         <td>
           <select name="descriptionOptions">
-            <option>
-              all words
-            </option>
-            <option>
-              any word
-            </option>
+            <c:forEach var="option" items="${options}">
+              <option>
+                ${option}
+              </option>
+            </c:forEach>
           </select>
         </td>
       </tr>
@@ -44,4 +44,34 @@
     </table>
     <button>Search</button>
   </form>
+  <c:if test="${not empty param}">
+    <table>
+      <thead>
+      <tr>
+        <td>Image</td>
+        <td>
+          Description
+        </td>
+        <td class="price">
+          Price
+        </td>
+      </tr>
+      </thead>
+      <c:forEach var="product" items="${products}">
+        <tr>
+          <td>
+            <img class="product-tile" src="${product.imageUrl}">
+          </td>
+          <td>
+            <a href="${pageContext.servletContext.contextPath}/products/${product.id}">
+                ${product.description}
+            </a>
+          </td>
+          <td class="price">
+            <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+          </td>
+        </tr>
+      </c:forEach>
+    </table>
+  </c:if>
 </tags:master>
