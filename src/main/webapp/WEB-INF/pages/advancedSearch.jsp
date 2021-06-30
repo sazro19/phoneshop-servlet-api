@@ -30,7 +30,12 @@
           Min price
         </td>
         <td>
-          <input name="minPrice" type="number" min="0">
+          <input name="minPrice" value="${not empty errors ? errors.get("minPrice") : ''}">
+          <c:if test="${not empty errors}">
+            <span class="error">
+              ${errors.get("minPrice")}: not a number
+            </span>
+          </c:if>
         </td>
       </tr>
       <tr>
@@ -38,7 +43,12 @@
           Max price
         </td>
         <td>
-          <input name="maxPrice" type="number" min="0">
+          <input name="maxPrice" value="${not empty errors ? errors.get("maxPrice") : ''}">
+          <c:if test="${not empty errors}">
+            <span class="error">
+              ${errors.get("maxPrice")}: not a number
+            </span>
+          </c:if>
         </td>
       </tr>
     </table>

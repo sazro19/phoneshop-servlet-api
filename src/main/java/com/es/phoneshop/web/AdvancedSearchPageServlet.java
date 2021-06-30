@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AdvancedSearchPageServlet extends HttpServlet {
     private static final String ERROR_ATTRIBUTE = "errors";
@@ -33,16 +35,20 @@ public class AdvancedSearchPageServlet extends HttpServlet {
         String stringMaxPrice = request.getParameter("maxPrice");
         BigDecimal minPrice = null;
         BigDecimal maxPrice = null;
+
+        Map<String, String> errors = new HashMap<>();
         if (stringMinPrice != null && stringMaxPrice != null){
-            if (!stringMinPrice.isEmpty() && !stringMaxPrice.isEmpty()) {
+            if (!stringMinPrice.isEmpty() || !stringMaxPrice.isEmpty()) {
+                NumberFormat format = NumberFormat.getInstance(request.getLocale());
                 try {
-                    NumberFormat format = NumberFormat.getInstance(request.getLocale());
                     minPrice = BigDecimal.valueOf(format.parse(stringMinPrice).doubleValue());
+                } catch (ParseException e) {
+                    errors.put("minPrice", stringMinPrice);
+                }
+                try {
                     maxPrice = BigDecimal.valueOf(format.parse(stringMaxPrice).doubleValue());
                 } catch (ParseException e) {
-                    request.setAttribute(DESCRIPTION_OPTIONS_ATTRIBUTE, "Not a number");
-                    doGet(request, response);
-                    return;
+                    errors.put("maxPrice", stringMaxPrice);
                 }
             }
         }
@@ -52,6 +58,7 @@ public class AdvancedSearchPageServlet extends HttpServlet {
             option = DescriptionOptions.getEnum(stringOption);
         }
 
+        request.setAttribute(ERROR_ATTRIBUTE, errors);
         request.setAttribute("products", advancedSearchService.findProducts(description, minPrice, maxPrice, option));
         request.setAttribute(DESCRIPTION_OPTIONS_ATTRIBUTE, DescriptionOptions.getStringOptions());
 
