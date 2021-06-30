@@ -43,12 +43,16 @@ public class AdvancedSearchPageServlet extends HttpServlet {
                 try {
                     minPrice = BigDecimal.valueOf(format.parse(stringMinPrice).doubleValue());
                 } catch (ParseException e) {
-                    errors.put("minPrice", stringMinPrice);
+                    if (!stringMinPrice.isEmpty()) {
+                        errors.put("minPrice", stringMinPrice);
+                    }
                 }
                 try {
                     maxPrice = BigDecimal.valueOf(format.parse(stringMaxPrice).doubleValue());
                 } catch (ParseException e) {
-                    errors.put("maxPrice", stringMaxPrice);
+                    if (!stringMaxPrice.isEmpty()) {
+                        errors.put("maxPrice", stringMaxPrice);
+                    }
                 }
             }
         }
